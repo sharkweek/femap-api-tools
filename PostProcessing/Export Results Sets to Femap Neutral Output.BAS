@@ -35,13 +35,13 @@ Sub Main
     Dim dlg As UserDialog
     Dialog dlg
 
-    If Right(dlg.Prefix) = " " 0R Right(dlg.Prefix) = "_" Then
+    If Right(dlg.Prefix,1) = " " Or Right(dlg.Prefix,1) = "_" Then
         filePrefix = dlg.Prefix + "OutputSet_"
     Else
         filePrefix = dlg.Prefix + "_OutputSet_"
     End If
 
-    If Left(dlg.Suffix) = " " OR Left(dlg.Suffix) = "_" Then
+    If Left(dlg.Suffix,1) = " " Or Left(dlg.Suffix,1) = "_" Then
         fileSuffix = dlg.Suffix
     Else
         fileSuffix = "_" + dlg.Suffix
