@@ -153,7 +153,7 @@ Sub Main
         'Text Colors
         .color(FVI_LABEL) = 128      'label color to dark grey
         .color(FVI_TEXT) = 128       'text color to dark grey
-        .Label(FVI_LABEL) = 38       'Change Text to 14 pt Arial
+        .Label(FVI_LABEL) = 39       'Change Text to 18 pt Arial
         .Color(FVI_VIEW_LEGEND) = 128 'Change view legend text color to dark grey
 
         'Properties
@@ -169,9 +169,9 @@ Sub Main
         .ColorMode(FVI_POST_TITLES) = 3      'Set legend style to titles and max/min data
 
         .Label(FVI_CONTOUR_LEGEND) = 2       'Post contour legend to the top right
-        .ColorMode(FVI_CONTOUR_LEGEND) = 3   'Set label color to view color with exponent labels
+        .ColorMode(FVI_CONTOUR_LEGEND) = 0   'Set label color to view color
         .Color(FVI_CONTOUR_LEGEND) = 0       'Set view color of contour legend labels to black
-        .ContourLegendShrinkPct = 95         'Shrink the contour Bar to 95%
+        .ContourLegendShrinkPct = 90         'Shrink the contour Bar to 95%
 
         .Label(FVI_CONTOUR_TYPE) = 1         'Elemental Contour Data
 

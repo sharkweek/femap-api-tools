@@ -4,11 +4,16 @@ Sub Main
     Dim App As femap.model
     Set App = feFemap()
 
+    Dim rc As Long
+
     Dim ouSets As femap.Set
     Set ouSets = App.feSet
 
     Dim gr As femap.Group
     Set gr = App.feGroup
+
+    Dim grRange As femap.Set
+    Set grRange = App.feSet
 
     Dim filePrefix As String
     Dim fileSuffix As String
@@ -20,8 +25,16 @@ Sub Main
     Dim tempSet As femap.Set
     Set tempSet = App.feSet
 
+    ' Prompt user to select group to export
     rc = gr.SelectID("Select Group to Export (Cancel for Full Model)")
-    rc = ouSets.Select( FT_OUT_CASE, True, "Select Output Sets to Export" )
+    If rc = FE_CANCEL Then
+        exportGroupID = 0
+    Else
+        expotGroupID = gr.ID
+    End If
+
+    ' Prompt user to select output sets
+    rc = ouSets.Select( FT_OUT_CASE, True, "Select Output Sets" )
 
     'Ask for output file prefixes/suffixes
     Begin Dialog UserDialog 320,154,"Append File Names" ' %GRID:10,7,1,1
@@ -35,13 +48,13 @@ Sub Main
     Dim dlg As UserDialog
     Dialog dlg
 
-    If Right(dlg.Prefix,1) = " " Or Right(dlg.Prefix,1) = "_" Then
+    If Left(dlg.Prefix,1) = " " Or Left(dlg.Prefix,1) = "_" Then
         filePrefix = dlg.Prefix + "OutputSet_"
     Else
         filePrefix = dlg.Prefix + "_OutputSet_"
     End If
 
-    If Left(dlg.Suffix,1) = " " Or Left(dlg.Suffix,1) = "_" Then
+    If Right(dlg.Suffix,1) = " " Or Right(dlg.Suffix,1) = "_" Then
         fileSuffix = dlg.Suffix
     Else
         fileSuffix = "_" + dlg.Suffix
@@ -54,7 +67,7 @@ Sub Main
                 fno_Name = filePrefix + Str$(ouSetID) + fileSuffix + ".fno"
                 tempSet.Clear
                 tempSet.Add( ouSetID )
-                rc = App.feFileWriteFNO( tempSet.ID, 0, gr.ID, fno_Name )
+                rc = App.feFileWriteFNO( tempSet.ID, 0, exportGroupID, fno_Name )
                 'App.feFileAttachResults( FAP_NE_NASTRAN, fno_Name, False )
                 ouSetID = ouSets.Next
             Wend
