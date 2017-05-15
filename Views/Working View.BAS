@@ -181,6 +181,8 @@ Sub Main
         .ColorMode(FVI_CONTOUR_LEVELS) = 0   'Use Standard pallete for contour levels
         .color(FVI_CONTOUR_LEVELS) = 10      'number of contour levels to 10
 
+        'Contour Arrows
+        .Label(FVI_CONTOUR_ARROW_OPT) = 6      'Solid Center Dual arrow style (Index=117)
 
         'Original FeMap Colors
         .ContourColor(FVI_LABEL) = 4
