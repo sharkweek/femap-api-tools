@@ -7,22 +7,33 @@ Sub Main
     Set App = feFemap
 
     Dim doublePrec As Long
-    Dim grSet As femap.Set
-    Dim gr As femap.Group
-    Dim grRefSet As femap.Set
     Dim bdfName As String
-    Set grSet = App.feSet
-    Set gr = App.feGroup
-    If grSet.SelectMultiID(FT_GROUP,1,"Select groups to export") = FE_CANCEL Then
-        Exit Sub
-    End If
 
-    doublePrec = App.feAppMessageBox(3,"Export in double precision?")
-    If doublePrec = FE_CANCEL Then
-        Exit Sub
-    End If
+    Dim grp As femap.Group
 
-'retrieve folder path
+    Dim runDeck As femap.AnalysisMgr
+
+    Dim grpLoadSet As femap.Set
+    Dim grpSPCSet As femap.Set
+    Dim grpElmSet As femap.Set
+    Dim grpNodeSet As femap.Set
+    Dim grpMatSet As femap.Set
+    Dim grpPropSet As femap.Set
+    Dim grpCsysSet As femap.Set
+    Dim grSet As femap.Set
+    Dim grRefSet As femap.Set
+
+    Set runDeck = App.feAnalysisMgr
+
+    Set grpLoadSet = App.feSet
+    Set grpSPCSet = App.feSet
+    Set grpElmSet = App.feSet
+    Set grpNodeSet = App.feSet
+    Set grpMatSet = App.feSet
+    Set grpPropSet = App.feSet
+    Set grpCsysSet = App.feSet
+
+    'retrieve folder path
     Dim objShell
     Dim objFolder
     Dim objFolderItem
@@ -40,19 +51,21 @@ Sub Main
     Set objFolder = Nothing
     Set objShell = Nothing
 
-' Open up analysis manager
-    Dim anSet As femap.AnalysisMgr
-    Set anSet = App.feAnalysisMgr
-    With anSet
-        .ID = .NextEmptyID
-        .title = "Macro Export by Group"
-        .InitAnalysisMgr(FAM_MSC_NASTRAN,FAT_MODES,True)
-        .NasBulkOn = True
-        If doublePrec = FE_OK Then
-            .NasBulkLargeField = 4
-        End if
-        .Active = .ID
-    End With
+    ' Select analysis manager to export
+    If runDeck.SelectID("Select Analysis Set to Export") = FE_CANCEL Then
+        End Sub
+    End If
+
+    ' Get bulk data group specified by Analysis Set
+    grp.Get(runDeck.NasBulkGroupID)  'may not need this
+
+    grpLoadSet.AddGroup(FT_LOAD_DEFINITION, runDeck.NasBulkGroupID)
+    grpSPCSet.AddGroup(FT_BC_DEFINITION, runDeck.NasBulkGroupID)
+    grpElmSet.AddGroup(FT_ELEM, runDeck.NasBulkGroupID)
+    grpNodeSet.AddGroup(FT_NODE, runDeck.NasBulkGroupID)
+    grpMatSet.AddGroup(FT_MATL, runDeck.NasBulkGroupID)
+    grpPropSet.AddGroup(FT_PROP, runDeck.NasBulkGroupID)
+    grpCsysSet.AddGroup(FT_CSYS, runDeck.NasBulkGroupID)
 
     Do While gr.NextInSet(grSet.ID)
         Set grRefSet = gr.ReferencedGroups
@@ -60,8 +73,8 @@ Sub Main
             Exit Do
         End If
 
-        anSet.NasBulkGroupID = gr.ID
-        anSet.Put(anSet.ID)
+        runDeck.NasBulkGroupID = gr.ID
+        runDeck.Put(runDeck.ID)
 
         'deal with group names...
         bdfName = gr.title
@@ -84,8 +97,6 @@ Sub Main
         App.feAppMessage(0, "File \'" & bdfName & "\' created")
 
     Loop
-
-    App.feDelete(FT_AMGR_DIR,-anSet.ID)
 
     App.feAppMessage(0, "File \'" & bdfName & "\' created")
 
