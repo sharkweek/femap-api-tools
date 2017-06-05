@@ -12,6 +12,9 @@ Sub Main
     Dim surfSet As femap.Set
     Set surfSet = App.feSet
 
+    Dim skippedSet As femap.Set
+    Set skippedSet = App.feSet
+
     Dim rad As Double
     Dim aLength As Double
     Dim cBase As Variant
@@ -20,7 +23,19 @@ Sub Main
     Dim cEnd(2) As Variant
     Dim pOffset As Double
 
+    Dim tracker As femap.TrackData
+    Set tracker = App.feTrackData
+
+    Dim cTrack As femap.Set
+    Set cTrack = App.feSet
+
+
+    Dim checkTol As Double
+
     Dim rc As Long
+
+    ' Begin tracking created curves
+    tracker.Start(4)
 
     ' Select cylindrical surfaces
     rc = surfSet.Select(FT_SURFACE, True, "Select cylindrical surfaces to create Axes")
@@ -32,7 +47,7 @@ Sub Main
     End If
 
     ' Prompt user to select length of axis and where to center
-    Begin Dialog UserDialog 270,105,"Axis Length" ' %GRID:xloc,yloc,width,height
+    Begin Dialog UserDialog 270,105,"Axis Length" ' %GRID:10,7,1,1
         text 30,14,100,21,"Axis length",.Text1
         text 30,42,100,14,"Percent Offset",.Text2
         TextBox 140,14,100,14,.axisLength
@@ -66,7 +81,7 @@ Sub Main
     ' Create axis base point and vector
     Do While surf.NextInSet(surfSet.ID)
         If surf.Cylindrical(rad, cBase, aVect) = FE_FAIL Then
-            App.feAppMessage(FCM_ERROR, "Surface" + Str(surf.ID)+ "is non-cylindrical. Surface skipped.")
+            skippedSet.Add(surfSet.CurrentID)
         Else
             ' Determine end points for axis
             For i = 0 To 2
@@ -75,8 +90,22 @@ Sub Main
             Next i
 
             ' Create line
-            App.feLinePoints(False, nBase, cEnd, True)
+            App.feLinePoints(False, nBase, cEnd, False)
         End If
     Loop
+
+    ' Set from created curves
+    tracker.Stop(4)
+    tracker.Created(4, cTrack.ID, False)
+
+    ' Merge created coincident points and curves
+    checkTol = 0.01 * aLength  ' check tolerance as 1% of specified axis length
+    App.feCheckCoincidentCurve(cTrack.ID, checkTol)
+
+    App.feAppMessage(FCM_NORMAL, cTrack.Count() & " curve(s) created...")
+
+    If skippedSet.Count() > 0 Then
+        App.feAppMessage(FCM_ERROR, skippedSet.count() & " surfaces were non-cylindrical and skipped.")
+    End If
 
 End Sub
