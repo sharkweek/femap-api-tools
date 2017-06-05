@@ -1,5 +1,6 @@
-'Create Axes for Cylinders
-' This macro creates unit-length lines through the axis of cylindrical surfaces on solids
+' Create Axes for Cylinders
+' This macro creates lines through the axes of cylindrical
+' surfaces on solids
 
 Sub Main
     Dim App As femap.model
@@ -31,9 +32,9 @@ Sub Main
     End If
 
     ' Prompt user to select length of axis and where to center
-    Begin Dialog UserDialog 270,105,"Axis Length" ' %GRID:10,7,1,1
-        text 20,14,90,21,"Axis length",.Text1
-        text 20,42,90,14,"Offset",.Text2
+    Begin Dialog UserDialog 270,105,"Axis Length" ' %GRID:xloc,yloc,width,height
+        text 30,14,100,21,"Axis length",.Text1
+        text 30,42,100,14,"Percent Offset",.Text2
         TextBox 140,14,100,14,.axisLength
         TextBox 140,42,100,14,.offsetValue
         OKButton 20,70,100,28
