@@ -3,6 +3,8 @@ Sub Main
 	Dim App As femap.model
     Set App = feFemap()
 
+    App.feAppMessage(FCM_COMMAND, "Create Fully Constrained Spider")
+
 	Dim feNode As femap.Node
 	Dim nodeSet As femap.Set
 	Dim feElem As femap.Elem

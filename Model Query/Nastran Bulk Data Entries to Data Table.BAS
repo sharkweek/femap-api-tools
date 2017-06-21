@@ -2,6 +2,8 @@ Sub Main
     Dim App As femap.model
     Set App = feFemap()
 
+    App.feAppMessage(FCM_COMMAND, "Nastran Bulk Data Entries to Data Table")
+
     Begin Dialog UserDialog 650,224,.dlgfunc ' %GRID:10,7,1,1
         OKButton 190,182,90,21,.okBox
         CancelButton 420,182,90,21,.cnBox

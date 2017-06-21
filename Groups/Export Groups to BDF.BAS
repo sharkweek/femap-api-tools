@@ -6,6 +6,8 @@ Sub Main
     Dim App As femap.model
     Set App = feFemap
 
+    App.feAppMessage(FCM_COMMAND, "Export Groups to BDF")
+
     Dim doublePrec As Long
     Dim grSet As femap.Set
     Dim gr As femap.Group

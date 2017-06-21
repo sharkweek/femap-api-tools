@@ -6,6 +6,8 @@ Sub Main
     Dim App As femap.model
     Set App = feFemap()
 
+    App.feAppMessage(FCM_COMMAND, "Create Coincident CBUSH Elements")
+
     Dim n As femap.Node
     Set n = App.feNode
 

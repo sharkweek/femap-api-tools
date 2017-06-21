@@ -6,6 +6,8 @@ Sub Main
     Dim App As femap.model
     Set App = feFemap()
 
+    App.feAppMessage(FCM_COMMAND, "Axes from Cylindrical Solid Surfaces")
+
     Dim surf As femap.Surface
     Set surf = App.feSurface
 
@@ -38,11 +40,11 @@ Sub Main
     tracker.Start(4)
 
     ' Select cylindrical surfaces
-    rc = surfSet.Select(FT_SURFACE, True, "Select cylindrical surfaces to create Axes")
-    If rc = FE_NOT_EXIST Then
-        App.feAppMessage(FCM_ERROR, "One or more surfaces do not exist")
+    rc = surfSet.Select(FT_SURFACE, True, "Select cylindrical surfaces to create axes")
+    If rc = FE_CANCEL Then
         Exit Sub
-    ElseIf rc = FE_CANCEL Then
+    ElseIf rc = FE_NOT_EXIST Then
+        App.feAppMessage(FCM_ERROR, "One or more surfaces do not exist")
         Exit Sub
     End If
 

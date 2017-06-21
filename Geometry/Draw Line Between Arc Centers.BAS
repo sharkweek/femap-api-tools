@@ -16,14 +16,14 @@ Sub Main
     ' Select Curve 1
     If crv1.SelectID("Pick Curve 1") = FE_CANCEL Then
         Exit Sub
-    Else If crv1.center(c1) = FE_FAIL Then
+    ElseIf crv1.center(c1) = FE_FAIL Then
         App.feAppMessage(FCM_ERROR, "Curve is non-circular or does not exist")
     End If
 
     ' Select Curve 2
     If crv2.SelectID("Pick Curve 2") = FE_CANCEL Then
         Exit Sub
-    Else If crv2.center(c2) = FE_FAIL Then
+    ElseIf crv2.center(c2) = FE_FAIL Then
         App.feAppMessage(FCM_ERROR, "Curve is non-circular or does not exist")
     End If
 

@@ -2,6 +2,8 @@ Sub Main
     Dim App As femap.model
     Set App = feFemap()
 
+    App.feAppMessage(FCM_COMMAND, "Batch Rename Solids")
+
     Dim rc As Long
 
     Dim objSet As femap.Set

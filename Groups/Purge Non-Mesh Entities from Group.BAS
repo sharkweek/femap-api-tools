@@ -4,6 +4,8 @@ Sub Main
     Dim App As femap.model
     Set App = feFemap()
 
+    App.feAppMessage(FCM_COMMAND, "Purge Non-Mesh Entities from Group")
+
     Dim rc As Long
 
     Dim gr As femap.Group

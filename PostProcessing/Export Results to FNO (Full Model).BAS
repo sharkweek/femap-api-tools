@@ -4,6 +4,8 @@ Sub Main
     Dim App As femap.model
     Set App = feFemap()
 
+    App.feAppMessage(FCM_COMMAND, "Export Results to *.fno (Full Model)")
+
     Dim rc As Long
 
     Dim modelOutputSets As femap.OutputSet

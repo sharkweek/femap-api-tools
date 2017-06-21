@@ -3,9 +3,15 @@
 ' created points to the intersected surfaces as mesh points, and break the
 ' intersected curves at newly created points'
 
+' TODO: Add mesh points to surface feature needs to be fixed. Curve break
+'       operation is creating a new point and deleting the point that is
+'       added to the surface in the previous step (see lines 66 and 71)
+
 Sub Main
     Dim App As femap.model
     Set App = feFemap()
+
+    App.feAppMessage(FCM_COMMAND, "Points at Surface-Curve Intersections")
 
     Dim tracker As femap.TrackData
     Set tracker = App.feTrackData
@@ -18,14 +24,16 @@ Sub Main
     Dim s As femap.Surface
     Dim p As femap.Point
     Dim sSet As femap.Set
-
-    Dim createdPoints As femap.Set
-    Set createdPoints = App.feSet
+    Dim delSet As femap.Set
 
     Set cSet = App.feSet
     Set sSet = App.feSet
     Set s = App.feSurface
     Set p = App.fePoint
+    Set delSet = App.feSet
+
+    Dim createdPoints As femap.Set
+    Set createdPoints = App.feSet
 
     ' Prompt to select surfaces and curves
     If sSet.Select(FT_SURFACE, False, "Select surfaces") = FE_CANCEL Then
@@ -64,7 +72,10 @@ Sub Main
 
                 ' break curve at point
                 If dlg.breakCurves Then
+                    delSet.Clear()
                     App.feCurveBreak(cSet.CurrentID, p.xyz)
+                    delSet.Add(p.ID)
+                    App.feDelete(3, delSet.ID)
                 End If
             End If
         Wend

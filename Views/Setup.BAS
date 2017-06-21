@@ -1,7 +1,8 @@
 Sub Main
     Dim App As femap.model
-    'Set App = GetObject(,"femap.model")
     Set App = feFemap()
+
+    App.feAppMessage(FCM_COMMAND, "Setup View")
 
     Dim viewID As Long
     Dim rc As femap.zReturnCode
