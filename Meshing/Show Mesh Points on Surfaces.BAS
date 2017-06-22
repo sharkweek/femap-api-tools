@@ -1,3 +1,6 @@
+' Show Mesh Points on Surfaces
+' Highlights mesh points on selected surfaces
+
 Sub Main
     Dim App As femap.model
     Set App = feFemap()

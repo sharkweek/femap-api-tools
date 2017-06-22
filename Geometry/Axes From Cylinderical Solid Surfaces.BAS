@@ -1,6 +1,5 @@
 ' Create Axes for Cylinders
-' This macro creates lines through the axes of cylindrical
-' surfaces on solids
+' This macro creates lines through the axes of cylindrical surfaces on solids
 
 Sub Main
     Dim App As femap.model

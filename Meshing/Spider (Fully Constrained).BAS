@@ -1,4 +1,6 @@
-Rem File: Spider.BAS
+' Modified from default Spider.BAS included in Femap. This script creates
+' a spider that is constrained in all 6 DOF instead of just translational
+
 Sub Main
 	Dim App As femap.model
     Set App = feFemap()

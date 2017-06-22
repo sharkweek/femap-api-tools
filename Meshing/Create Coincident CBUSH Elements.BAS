@@ -1,6 +1,7 @@
-'This API script will create a "coincident node" CBUSH Element at each selected node.
-'The 2nd node of the CBUSH will be created
-'A CBUSH property with an Orinetation CSys must be selected in order for this API to run to completion.
+' This API script will create a "coincident node" CBUSH Element at each
+' selected node. The 2nd node of the CBUSH will be created. A CBUSH property
+' with an Orinetation CSys must be selected in order for this API to run to
+' completion.
 
 Sub Main
     Dim App As femap.model
