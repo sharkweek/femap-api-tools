@@ -15,6 +15,7 @@ Sub Main
     Dim bdfName As String
     Set grSet = App.feSet
     Set gr = App.feGroup
+
     If grSet.SelectMultiID(FT_GROUP,1,"Select groups to export") = FE_CANCEL Then
         Exit Sub
     End If
@@ -88,8 +89,6 @@ Sub Main
     Loop
 
     App.feDelete(FT_AMGR_DIR,-anSet.ID)
-
-    App.feAppMessage(0, "File \'" & bdfName & "\' created")
 
 End Sub
 

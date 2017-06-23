@@ -38,7 +38,7 @@ Sub Main
     End If
 
     ' Select groups to alphabetize
-    rc = groupSet.Select(FT_GROUP,True,"Select groups to alphabetize")
+    rc = groupSet.SelectMultiID(FT_GROUP,1,"Select groups to alphabetize")
     If rc = FE_NOT_EXIST Then
         App.feAppMessage(FCM_ERROR, "No groups in selected set exist.")
     ElseIf rc = FE_CANCEL Then
