@@ -16,6 +16,10 @@ Sub Main
     Set grSet = App.feSet
     Set gr = App.feGroup
 
+    Dim tempGroup As femap.Group
+    Set tempGroup = App.feGroup
+    Dim tempGroupID As Long
+
     If grSet.SelectMultiID(FT_GROUP,1,"Select groups to export") = FE_CANCEL Then
         Exit Sub
     End If
@@ -25,7 +29,12 @@ Sub Main
         Exit Sub
     End If
 
-'retrieve folder path
+    expRel = App.feAppMessageBox(3,"Export related entities to group?")
+    If expRel = FE_CANCEL Then
+        Exit Sub
+    End If
+
+    'retrieve folder path
     Dim objShell
     Dim objFolder
     Dim objFolderItem
@@ -43,7 +52,7 @@ Sub Main
     Set objFolder = Nothing
     Set objShell = Nothing
 
-' Open up analysis manager
+    ' Open up analysis manager
     Dim anSet As femap.AnalysisMgr
     Set anSet = App.feAnalysisMgr
     With anSet
@@ -58,12 +67,23 @@ Sub Main
     End With
 
     Do While gr.NextInSet(grSet.ID)
+        ' check to make sure group is not a referenced group
         Set grRefSet = gr.ReferencedGroups
         If grRefSet.Count <> 0 Then
             Exit Do
         End If
 
-        anSet.NasBulkGroupID = gr.ID
+        ' create group with related entities
+        If expRel Then
+            tempGroup.Get(gr.ID)
+            tempGroup.AddRelated()
+            tempGroupID = tempGroup.NextEmptyID()
+            tempGroup.Put(tempGroupID)
+            anSet.NasBulkGroupID = tempGroupID
+        Else
+            anSet.NasBulkGroupID = gr.ID
+        End If
+
         anSet.Put(anSet.ID)
 
         'deal with group names...
@@ -81,13 +101,21 @@ Sub Main
             bdfName = Mid(bdfName,InStr(bdfName,"/")+1)
         Wend
 
+        ' write out deck as NX Nastran deck
         App.feFileWriteNastran(0, bdfName)
 
+        ' delete group with related entites
+        If expRel Then
+            App.feDelete(FT_GROUP, -tempGroupID)
+        End If
+
+        ' clean up *.bdf
         Call modOutputFiles(bdfName,doublePrec)
         App.feAppMessage(0, "File \'" & bdfName & "\' created")
 
     Loop
 
+    ' delete temporary analysis set from database
     App.feDelete(FT_AMGR_DIR,-anSet.ID)
 
 End Sub
