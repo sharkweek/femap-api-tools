@@ -5,7 +5,7 @@ Sub Main
     Dim App As femap.model
     Set App = feFemap()
 
-    App.feAppMessage(FCM_COMMAND, "Show Mesh Points on Surfaces")
+    App.feAppMessage(FCM_COMMAND, "Show Mesh Points on Surface")
 
     Dim rc As Long
 

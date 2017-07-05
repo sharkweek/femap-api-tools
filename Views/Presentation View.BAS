@@ -24,7 +24,7 @@ Sub Main
 
         '.Draw
         'Labels, Entities, & Colors
-        .Draw(FVI_LABEL)=False                   'Label Parameters (Index=0)
+        .Draw(FVI_LABEL)=True                   'Label Prefix (Index=0)
         .Draw(FVI_CSYS)=False                    'Coordinate System (Index=1)
         .Draw(FVI_POINT)=False                   'Point (Index=2)
         .Draw(FVI_CURVE)=False                   'Curve (Index=3)
