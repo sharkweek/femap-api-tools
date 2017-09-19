@@ -12,11 +12,67 @@ Sub Main
         .feAppGetActiveView(viewID)
     End With
 
+    Dim slctr As femap.Selector
+    Set slctr = App.feSelector
+
     Dim View As femap.View
     Set View = App.feView
 
+    Dim presentationView As femap.View
+    Set presentationView = App.feView
+
+    ' Setup the selector
+    With slctr
+        .MultipleMode = True
+        .AddMode = True
+        .DrillMode = 0
+        .RelatedMode = False
+        .SelectEntity = FT_ELEM
+        .Active = False
+    End With
+
+    'Set RBE2 and RBE3 to different colors
+    Dim rigidSet As femap.Set
+    Set rigidSet = App.feSet
+    Dim eid1 As Long
+        rc = rigidSet.AddRule( femap.FET_L_RIGID, FGD_ELEM_BYTYPE )
+        eid1 = rigidSet.First
+
+    Dim elem1 As femap.Elem
+    Set elem1 = App.feElem
+    Dim elem2 As femap.Elem
+    Set elem2 = App.feElem
+
+    While eid1 > 0
+        If eid1 = 0 Then Exit While
+
+        rc = elem1.Get( eid1)
+        If elem1.RigidInterpolate = True Then
+            '*** RBE3 Color ***
+            elem1.color =8
+        Else
+            '*** RBE2 Color ***
+            elem1.color =75
+        End If
+        elem1.Put (eid1)
+            eid1 = rigidSet.Next
+    Wend
+
+    Dim Color As Long
+    Color = 80
+    Dim Index As Long
+
+    'Randomize the Propety Colors
+    Dim pset As femap.Set  'Set containing all properties
+    Dim propset As Integer
+    Set pset = App.feSet()
+    propset = pset.ID
+    rc = pset.AddAll(FT_PROP)
+    If pset.count<=0 Then Exit Sub
+
     With View
         .Get(viewID)
+        .Title = "Working"
 
         .WindowBackcolor = 55                     'Set first background color to neutral blue
         .WindowShadeBack = False                  'Use a shaded background
@@ -46,7 +102,6 @@ Sub Main
         .ColorMode(FVI_CSYS) = 7                  'CSys is RGB Arrow
         .ContourColor(FVI_CSYS) = 16408
         .Draw(FVI_CURVE_ACCURACY)=False           'Curve/Surface Directions (Index=39)
-        .Draw(FVI_CURVE_MESHSIZE)=False           'Curve - Mesh Size (Index=24)
         .Draw(FVI_CURVE)=False                    'Curve (Index=3)
         .ContourColor(FVI_CURVE) = 16504
         .Draw(FVI_ELEM_CSYS)=False                'Element - Coordinate System (Index=96)
@@ -125,60 +180,41 @@ Sub Main
         .ContourElemUnaveraged = True             'No Averaging
         .ContourLegendShrinkPct = 95              'Shrink the contour Bar to 95%
         .Label(FVI_CONTOUR_ARROW_OPT) = 6         'Solid Center Dual arrow style (Index=117)
+        .Draw(FVI_CURVE_MESHSIZE) = True          'Show mesh sizing
+        .Label(FVI_CURVE_MESHSIZE) = 3            'Curve mesh sizing shown as symbols and count
 
         .Put(viewID)
-
     End With
-
-    'Set element Color for all elements
-    Dim eset As femap.Set  'Set Containing all elements
-    Set eset = App.feSet()
-    rc = eset.AddAll(FT_ELEM)
-    App.feModifyColor(FT_ELEM,eset.ID, 75, False)
-
-    '
-    '*********** Set RBE2 and RBE3 to different colors ********************
-    '
-    Dim rigidSet As femap.Set
-    Set rigidSet = App.feSet
-    Dim eid1 As Long
-        rc = rigidSet.AddRule( femap.FET_L_RIGID, FGD_ELEM_BYTYPE )
-        eid1 = rigidSet.First
-
-    Dim elem1 As femap.Elem
-    Set elem1 = App.feElem
-    Dim elem2 As femap.Elem
-    Set elem2 = App.feElem
-
-    While eid1 > 0
-        If eid1 = 0 Then Exit While
-
-        rc = elem1.Get( eid1)
-        If elem1.RigidInterpolate = True Then
-            '*** RBE3 Color ***
-            elem1.color =8
-        Else
-            '*** RBE2 Color ***
-            elem1.color =75
-        End If
-        elem1.Put (eid1)
-            eid1= rigidSet.Next
-    Wend
-
-    Dim Color As Long
-    Color = 80
-    Dim Index As Long
-
-    'Randomize the Propety Colors
-    Dim pset As femap.Set  'Set containing all properties
-    Dim propset As Integer
-    Set pset = App.feSet()
-    propset = pset.ID
-    rc = pset.AddAll(FT_PROP)
-    If pset.count<=0 Then Exit Sub
 
     'Regenerate and redraw view
     View.Regenerate
     View.Redraw
+
+    ' Create Presentation View
+    With View
+        .Get(viewID)
+        .Title = "Presentation"
+
+        .WindowBackColor = 124              'Set the background to white
+        .WindowShadeBack = False            'Use a shaded background
+
+        .Label(FVI_LABEL) = 39              'Change Text to 18 pt Arial
+        .ContourLegendShrinkPct = 90        'Shrink the contour Bar to 90%
+        .ColorMode(FVI_CONTOUR_LEVELS) = 0  'Use Standard pallete for contour levels
+        .ColorMode(FVI_CONTOUR_STYLE) = 3   'Max Element No Corner Data
+        .Draw(FVI_CURVE_MESHSIZE) = False   'Curve - Mesh Size (Index=24)
+        .Draw(FVI_POINT) = False            'Turn off points
+        .Draw(FVI_CURVE) = False            'Turn off curves
+        .Draw(FVI_SURFACE) = False          'Turn off surfaces
+
+        .Color(FVI_TEXT) = 128              'text color to dark grey
+        .Color(FVI_VIEW_LEGEND) = 128       'Change view legend text color to dark grey
+        .ColorMode(FVI_FILLED_EDGES) = 1    'use view color for filled  edges
+        .Color(FVI_FILLED_EDGES) = 128
+        .Draw(FVI_ORIGIN) = False           'Origin (Index=33)
+        .Color(FVI_LABEL) = 128             'label colors to dark grey
+
+        .Put(View.NextEmptyID)
+    End With
 
 End Sub

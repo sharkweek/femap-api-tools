@@ -12,67 +12,67 @@ Sub Main
     Dim n As femap.Node
     Set n = App.feNode
 
-    Dim nset As femap.Set
-    Set nset = App.feSet
+    Dim nSet As femap.Set
+    Set nSet = App.feSet
 
     Dim p As femap.Prop
     Set p = App.feProp
 
-    Dim pset As femap.Set
-    Set pset = App.feSet
+    Dim pSet As femap.Set
+    Set pSet = App.feSet
 
     Dim e As femap.Elem
     Set e = App.feElem
 
     Dim pid As Long
 
-    pset.AddAll (FT_PROP)
-
-    If pset.Count = 0 Then
-    	rc = App.feAppMessageBox (0, "No properties exist. Create a Spring/Damper Property and try again")
-		GoTo Done
+    ' Create set of spring/damper properties
+    pSet.AddRule(6, FGD_Prop_byType)
+    If pSet.Count = 0 Then
+        App.feAppMessage(FCM_ERROR, "No Spring/Damper properties exist. Create one and try again.")
+        GoTo Done
     End If
 
-    Again:
+    Start:
 
-    pset.SelectID (FT_PROP, "Select Spring/Damper Property", pid)
+    pSet.SelectID(FT_PROP, "Select Spring/Damper Property", pid)
 
-    p.Get (pid)
+    p.Get(pid)
     ptype = p.type
 
     If ptype = 6 Then
-    	If p.flag (0) = False Then
-			rc = App.feAppMessageBox (2,"Spring/Dmaper Property does not have an Orientation Coordinate System. Choose Another Property? (No = Cancel)")
-			If rc = -1 Then
-				GoTo Again
-			Else
-				GoTo Done
-			End If
-    	End If
+        If p.flag(0) = False Then
+            rc = App.feAppMessageBox(2,"Spring/Dmaper Property does not have an Orientation Coordinate System. Choose Another Property? (No = Cancel)")
+            If rc = FE_OK Then
+                GoTo Start
+            Else
+                GoTo Done
+            End If
+        End If
 
     Else
-    	rc = App.feAppMessageBox (2, "Not a Spring/Dmaper Property. Choose Another Property? (No = Cancel)")
-    	If rc = -1 Then
-			GoTo Again
-		Else
-			GoTo Done
-		End If
+        rc = App.feAppMessageBox(2, "Not a Spring/Dmaper Property. Choose Another Property? (No = Cancel)")
+        If rc = FE_OK Then
+            GoTo Start
+        Else
+            GoTo Done
+        End If
     End If
 
-    nset.Select (FT_NODE, True, "Select Nodes for Coincident CBUSH Elements")
+    nSet.Select(FT_NODE, True, "Select Nodes for Coincident CBUSH Elements")
 
-    While nset.Next
-    	nid = nset.CurrentID
-    	n.Get (nid)
-    	nidG = n.NextEmptyID
-    	n.Put (nidG)
-		e.type = FET_L_SPRING
-		e.topology = FTO_LINE2
-		e.Node (0) = nid
-		e.Node (1) = nidG
-		e.propID = pid
-		e.formulation (1) = 1
-    	e.Put (e.NextEmptyID)
+    While nSet.Next
+        nid = nSet.CurrentID
+        n.Get(nid)
+        nidG = n.NextEmptyID
+        n.Put(nidG)
+        e.type = FET_L_SPRING
+        e.topology = FTO_LINE2
+        e.Node(0) = nid
+        e.Node(1) = nidG
+        e.propID = pid
+        e.formulation(1) = 1
+        e.Put(e.NextEmptyID)
     Wend
 
     Done:

@@ -56,4 +56,6 @@ Sub Main
         App.feAppMessage(FCM_NORMAL, cSet.Count() & " Curve(s) broken...")
     End If
 
+    App.feViewRegenerate(0)
+
 End Sub

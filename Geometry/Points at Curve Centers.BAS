@@ -52,7 +52,7 @@ Sub Main
             pnt.xyz = cntr
             pnt.Put(pnt.NextEmptyID)
         Else
-            App.feAppMessage(FCM_ERROR, "Curve" & Str(crv.ID) & " is not circular. Curve skipped")
+            App.feAppMessage(FCM_ERROR, "Curve " & Str(crv.ID) & " is not circular. Curve skipped")
         End If
     Loop
 

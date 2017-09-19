@@ -82,6 +82,7 @@ Sub Main
     ' Create axis base point and vector
     Do While surf.NextInSet(surfSet.ID)
         If surf.Cylindrical(rad, cBase, aVect) = FE_FAIL Then
+            App.feAppMessage(FCM_ERROR, "Surface " & CStr(surf.ID) & " is not cylindrical. Surface skipped...")
             skippedSet.Add(surfSet.CurrentID)
         Else
             ' Determine end points for axis
@@ -108,5 +109,7 @@ Sub Main
     If skippedSet.Count() > 0 Then
         App.feAppMessage(FCM_ERROR, skippedSet.count() & " surfaces were non-cylindrical and skipped.")
     End If
+
+    App.feViewRegenerate(0)
 
 End Sub

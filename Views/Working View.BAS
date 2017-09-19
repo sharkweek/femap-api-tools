@@ -133,4 +133,13 @@ Sub Main
 
     End With
 
+    Dim slct As femap.Selector
+    Set slct = App.feSelector
+
+    With slct
+        .MultipleMode = True
+        .AddMode = True
+        .DrillMode = FSD_OFF
+    End With
+
 End Sub
