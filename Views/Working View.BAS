@@ -18,8 +18,12 @@ Sub Main
     With View
         .Get(viewID)
 
-        .WindowBackcolor = 55                     'Set first background color to neutral blue
-        .WindowShadeBack = False                  'Use a shaded background
+        .WindowShadeBack = True                   'Use a shaded background
+        .WindowShadeBackOpt = 6                   'Use horizon option
+        .WindowBackColor2 = 136
+        .WindowBackcolor = 136
+        .WindowBackColor3 = 132
+        .WindowShadeHorizon = 40
 
         .Draw(FVI_AERO_INTERFERENCE)=False        'Aero Interference (Index=108)
         .Draw(FVI_AERO_MESH)=False                'Aero Mesh (Index=103)
@@ -110,6 +114,7 @@ Sub Main
         .ColorMode(FVI_VIEW_AXES) = 5             'View Axes as RGB Solid
         .Draw(FVI_VIEW_LEGEND)=True               'View Legend (Index=31)
         .Color(FVI_VIEW_LEGEND) = 149             'Change view legend text color to grey/white
+        .ColorMode(FVI_VIEW_LEGEND) = 0           'Change view legend text to IDs only
         .Draw(FVI_VOLUME) =False                  'Volume (Index=5)
         .ContourColor(FVI_VOLUME) = 16488
         .Draw(FVI_WORKPLANE_GRID)=False           'Workplane Grid (Index=35)
