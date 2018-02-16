@@ -76,9 +76,9 @@ Sub Main
 
         .WindowShadeBack = True                   'Use a shaded background
         .WindowShadeBackOpt = 6                   'Use horizon option
-        .WindowBackColor2 = 136
-        .WindowBackcolor = 136
-        .WindowBackColor3 = 132
+        .WindowBackColor = 136
+        .WindowBackColor2 = 132
+        .WindowBackColor3 = 136
         .WindowShadeHorizon = 40
 
         .Draw(FVI_AERO_INTERFERENCE)=False        'Aero Interference (Index=108)
