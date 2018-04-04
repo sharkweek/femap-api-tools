@@ -1,4 +1,4 @@
-#TODOs
+# TODOs
 * Create script for listing out NASTRAN card entries to the messages window
-* Create script to flip 1D elements (switch node A and node B)
 * Create script to export multiple analysis set BDFs
+* Bulk properties run substitute script that calculates top and bottom surface stresses (component and principal) for laminates
