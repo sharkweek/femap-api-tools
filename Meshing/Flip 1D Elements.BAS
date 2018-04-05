@@ -32,18 +32,11 @@ Sub Main
 
         Select Case elm.topology
 
-            Case 0  'If element is a Line2 element
+            Case 0 to 1 'If element is a Line2 or Line3 element
                 node1 = elm.node(0)
                 node2 = elm.node(1)
                 elm.node(0) = node2
                 elm.node(1) = node1
-                elm.Put(elm.ID)
-
-            Case 1  'If element is a Line3 element
-                node1 = elm.node(0)
-                node2 = elm.node(2)
-                elm.node(0) = node2
-                elm.node(2) = node1
                 elm.Put(elm.ID)
 
             Case Else
