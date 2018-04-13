@@ -91,10 +91,10 @@ Sub Main
     'Prompts user for field format
     Dim UserFormat As Integer
 
-    Begin Dialog UserDialog 400,203,"Field Format Options" 'NasBulkLargeField %GRID:10,7,1,1
-        ListBox 20,21,360,119,FFormat(),.ListBox1
-        OKButton 70,154,120,35
-        CancelButton 220,154,120,35
+    Begin Dialog UserDialog 310,119,"Field Format Options" 'NasBulkLargeField %GRID:10,7,1,1
+        ListBox 20,14,270,70,FFormat(),.ListBox1
+        OKButton 40,84,100,28
+        CancelButton 170,84,100,28
     End Dialog
     Dim dlg As UserDialog
     UserFormat = Dialog(dlg)
@@ -134,6 +134,8 @@ Sub Main
     End If
 
 End Sub
+
+
 Function FixFile(fileName As String)
 
     Set readOld = CreateObject("Scripting.FileSystemObject")
@@ -182,6 +184,8 @@ Function FixFile(fileName As String)
     writeNew.Close
 
 End Function
+
+
 Function DeleteTempFile(FileToDelete As String)
 
     SetAttr FileToDelete, vbNormal  'Makes sure it is not in an undeletable view
