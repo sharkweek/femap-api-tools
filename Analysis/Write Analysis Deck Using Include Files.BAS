@@ -116,10 +116,13 @@ Sub Main
 
     'Write out picked deck here and store name
     pickedDeckTitle = Replace(pickedDeck.title," ", "_") 'Replace spaces with underscores
+    pickedDeckTitle = Replace(pickedDeckTitle, "_-_", "-")
     pickedDeckTitle = Replace(pickedDeckTitle, "\", "-")
     pickedDeckTitle = Replace(pickedDeckTitle, "/", "-")
-    pickedDeckTitle = Replace(pickedDeckTitle, "&", "and")
     pickedDeckTitle = Replace(pickedDeckTitle, "*", "-")
+    pickedDeckTitle = Replace(pickedDeckTitle, ":", "-")
+    pickedDeckTitle = Replace(pickedDeckTitle, "&", "and")
+    pickedDeckTitle = Replace(pickedDeckTitle, "%", "")
     pickedDeckFileName = modelFilePath & pickedDeckTitle 'Sets file name with path for picked deck
     App.feFileWriteNastran(8, pickedDeckFileName)
 
@@ -163,7 +166,7 @@ Sub Main
 
         ' Add file name to include statement array
         ReDim Preserve includeFiles(j + 1)
-        includeFiles(j) = "INCLUDE '.\" & dummyDeckTitle & ".include'"
+        includeFiles(j) = "INCLUDE '" & dummyDeckTitle & ".include'"
         j = j + 1
 
     Wend
@@ -173,7 +176,6 @@ Sub Main
     'Reassign the original analysis group to the analysis set when done
     pickedDeck.NasBulkGroupID = pickedGroup.ID
     pickedDeck.Put(pickedDeck.ID)
-    pickdDeck.Active = pickedDeck.ID
 
     'Delete empty group
     emptyGroup.Delete(emptyGroup.ID)
@@ -193,18 +195,23 @@ Sub Main
         Line Input #readDeck, textRow
         If InStr(1, textRow, "ENDDATA") = 1 Then
             i = 0
-            Do While i < (j - 1)  'use final j as length of includeFiles array
+            Do While i <= (j - 1)  'use final j as length of includeFiles array
                 includeStatement = includeFiles(i)
                 Print #writeDeck, includeStatement
                 i = i + 1
             Loop
             Print #writeDeck, textRow  'place ENDDATA line back at end of file
+        ElseIf InStr(1, textRow, "$ Femap") = 1 Then
+            'do nothing
         Else
             Print #writeDeck, textRow
         End If
     Loop
     Close #readDeck
     Close #writeDeck
+
+    'Delete original file
+    DeleteTempFile(pickedDeckFileName)
 
     App.feAppMessage(FCM_NORMAL, "Export completed.")
 
