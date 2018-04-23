@@ -4,10 +4,3 @@
 * Bulk properties run substitute script that calculates top and bottom surface stresses (component and principal) for laminates
 * Create standard libraries
 * Fix line creation button to use native Geometry > Line > Points...
-* Restructure folders into following tree
-    * user-tools - use as user toolbox directory
-    * python - python scripts
-    * excel - excel scripts
-    * preferences
-        * layouts
-        * libraries
