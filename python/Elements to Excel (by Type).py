@@ -1,25 +1,28 @@
 import pythoncom
 import Pyfemap
-from Pyfemap import constants #Sets femap constants to constants object so calling constants in constants.FCL_BLACK, not Pyfemap.constants.FCL_BLACK
+from Pyfemap import constants  # Sets femap constants to constants object so
+# calling constants in constants.FCL_BLACK, not Pyfemap.constants.FCL_BLACK
 import sys
 
 import win32com.client as win32
-win32.gencache.is_readonly=False
-appExcel = win32.Dispatch('Excel.Application') #Calls and creates new excel application
+win32.gencache.is_readonly = False
+appExcel = win32.Dispatch(
+    'Excel.Application')  # Calls and creates new excel application
 
 try:
-    existObj = pythoncom.connect(Pyfemap.model.CLSID) #Grabs active model
+    existObj = pythoncom.connect(Pyfemap.model.CLSID)  # Grabs active model
     app = Pyfemap.model(existObj)
 except:
-    sys.exit("femap not open") #Exits program if there is no active femap model
+    sys.exit(
+        "femap not open")  # Exits program if there is no active femap model
 
-rc = app.feAppMessage(0,"Python API Example Started")
+rc = app.feAppMessage(0, "Python API Example Started")
 
 workBook = appExcel.Workbooks.Add()
 workSheet = workBook.Worksheets(1)
 
-workSheet.Cells(1,1).Value = "Element Type"
-workSheet.Cells(1,2).Value = "Element Count"
+workSheet.Cells(1, 1).Value = "Element Type"
+workSheet.Cells(1, 2).Value = "Element Count"
 
 col = 2
 
@@ -29,98 +32,57 @@ Msg = "Model Element Summary"
 
 app.feAppMessage(constants.FCL_BLACK, Msg)
 
-for i in range(1,42):
+string_vals = {1: "L_ROD elements",
+               2: "L_BAR elements",
+               3: "L_TUBE elements",
+               4: "L_LINK elements",
+               5: "L_BEAM elements",
+               6: "L_SPRING elements",
+               7: "L_DOF_SPRING elements",
+               8: "L_CURVED_BEAM elements",
+               9: "L_GAP elements",
+               10: "L_PLOT elements",
+               11: "L_SHEAR elements",
+               12: "P_SHEAR elements",
+               13: "L_MEMBRANE elements",
+               14: "P_MEMBRANE elements",
+               15: "L_BENDING elements",
+               16: "P_BENDING elements",
+               17: "L_PLATE elements",
+               18: "P_PLATE elements",
+               19: "L_PLANE_STRAIN elements",
+               20: "P_PLANE_STRAIN elements",
+               21: "L_LAMINATE_PLATE elements",
+               22: "P_LAMINATE_PLATE elements",
+               23: "L_AXISYM elements",
+               24: "P_AXISYM elements",
+               25: "L_SOLID elements",
+               26: "P_SOLID elements",
+               27: "L_MASS elements",
+               28: "L_MASS_MATRIX elements",
+               29: "L_RIGID elements",
+               30: "L_STIFF_MATRIX elements",
+               31: "L_CURVED_TUBE elements",
+               32: "L_PLOT_PLATE elements",
+               33: "L_SLIDE_LINE elements",
+               34: "L_CONTACT elements",
+               35: "L_AXISYM_SHELL elements",
+               36: "P_AXISYM_SHELL elements",
+               37: "P_BEAM elements",
+               38: "L_WELD elements",
+               39: "L_SOLID_LAMINATE elements",
+               40: "P_SOLID_LAMINATE elements",
+               41: "L_SPRING_to_GROUND elements",
+               42: "L_DOF_SRPING_to_GROUND elements}"}
+
+for val in string_vals:
     pElemSet.clear()
-    pElemSet.AddRule(i,constants.FGD_ELEM_BYTYPE)
+    pElemSet.AddRule(val, constants.FGD_ELEM_BYTYPE)
 
     if pElemSet.Count() > 0:
         workSheet.Cells(col, 2).Value = str(pElemSet.Count())
-
-        if i == 1:
-            workSheet.Cells(col,1).Value = "L_ROD elements"
-        elif i == 2:
-            workSheet.Cells(col, 1).Value = " L_BAR elements"
-        elif i == 3:
-            workSheet.Cells(col, 1).Value = " L_TUBE elements"
-        elif i == 4:
-            workSheet.Cells(col, 1).Value = " L_LINK elements"
-        elif i == 5:
-            workSheet.Cells(col, 1).Value = " L_BEAM elements"
-        elif i == 6:
-            workSheet.Cells(col, 1).Value = " L_SPRING elements"
-        elif i == 7:
-            workSheet.Cells(col, 1).Value = " L_DOF_SPRING elements"
-        elif i == 8:
-            workSheet.Cells(col, 1).Value = " L_CURVED_BEAM elements"
-        elif i == 9:
-            workSheet.Cells(col, 1).Value = " L_GAP elements"
-        elif i == 10:
-            workSheet.Cells(col, 1).Value = " L_PLOT elements"
-        elif i == 11:
-            workSheet.Cells(col, 1).Value = " L_SHEAR elements"
-        elif i == 12:
-            workSheet.Cells(col, 1).Value = " P_SHEAR elements"
-        elif i == 13:
-            workSheet.Cells(col, 1).Value = " L_MEMBRANE elements"
-        elif i == 14:
-            workSheet.Cells(col, 1).Value = " P_MEMBRANE elements"
-        elif i == 15:
-            workSheet.Cells(col, 1).Value = " L_BENDING elements"
-        elif i == 16:
-            workSheet.Cells(col, 1).Value = " P_BENDING elements"
-        elif i == 17:
-            workSheet.Cells(col, 1).Value = " L_PLATE elements"
-        elif i == 18:
-            workSheet.Cells(col, 1).Value = " P_PLATE elements"
-        elif i == 19:
-            workSheet.Cells(col, 1).Value = " L_PLANE_STRAIN elements"
-        elif i == 20:
-            workSheet.Cells(col, 1).Value = " P_PLANE_STRAIN elements"
-        elif i == 21:
-            workSheet.Cells(col, 1).Value = " L_LAMINATE_PLATE elements"
-        elif i == 22:
-            workSheet.Cells(col, 1).Value = " P_LAMINATE_PLATE elements"
-        elif i == 23:
-            workSheet.Cells(col, 1).Value = " L_AXISYM elements"
-        elif i == 24:
-            workSheet.Cells(col, 1).Value = " P_AXISYM elements"
-        elif i == 25:
-            workSheet.Cells(col, 1).Value = " L_SOLID elements"
-        elif i == 26:
-            workSheet.Cells(col, 1).Value = " P_SOLID elements"
-        elif i == 27:
-            workSheet.Cells(col, 1).Value = " L_MASS elements"
-        elif i == 28:
-            workSheet.Cells(col, 1).Value = " L_MASS_MATRIX elements"
-        elif i == 29:
-            workSheet.Cells(col, 1).Value = " L_RIGID elements"
-        elif i == 30:
-            workSheet.Cells(col, 1).Value = " L_STIFF_MATRIX elements"
-        elif i == 31:
-            workSheet.Cells(col, 1).Value = " L_CURVED_TUBE elements"
-        elif  i == 32:
-            workSheet.Cells(col, 1).Value = " L_PLOT_PLATE elements"
-        elif i == 33:
-            workSheet.Cells(col, 1).Value = " L_SLIDE_LINE elements"
-        elif i == 34:
-            workSheet.Cells(col, 1).Value = " L_CONTACT elements"
-        elif i == 35:
-            workSheet.Cells(col, 1).Value = " L_AXISYM_SHELL elements"
-        elif i == 36:
-            workSheet.Cells(col, 1).Value = " P_AXISYM_SHELL elements"
-        elif i == 37:
-            workSheet.Cells(col, 1).Value = " P_BEAM elements"
-        elif i == 38:
-            workSheet.Cells(col, 1).Value = " L_WELD elements"
-        elif i == 39:
-            workSheet.Cells(col, 1).Value = " L_SOLID_LAMINATE elements"
-        elif i == 40:
-            workSheet.Cells(col, 1).Value = " P_SOLID_LAMINATE elements"
-        elif i == 41:
-            workSheet.Cells(col, 1).Value = " L_SPRING_to_GROUND elements"
-        elif i == 42:
-            workSheet.Cells(col, 1).Value = " L_DOF_SRPING_to_GROUND elements"
+        workSheet.Cells(col, 1).Value = string_vals[val]
         col = col + 1
 
 appExcel.Visible = True
-rc = app.feAppMessage(0,"Python API Example Finished")
+rc = app.feAppMessage(0, "Python API Example Finished")

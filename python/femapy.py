@@ -1,16 +1,16 @@
 import __main__
 import pythoncom
-import pyfemap  # the Python Femap API library
+import pyfemap1142  # the Python Femap API library
 import sys
 
 try:
-    existObj = pythoncom.connect(pyfemap.model.CLSID) #Grabs active model
-
+    existObj = pythoncom.connect(pyfemap1142.model.CLSID)  # Grabs active model
 except:
-    sys.exit("Femap not open") #Exits program if there is no active femap model
+    sys.exit("Femap not open")  # Exits program if there is no active femap
+    # model
 
-app = pyfemap.model(existObj)
-fc = pyfemap.constants
+app = pyfemap1142.model(existObj)
+fc = pyfemap1142.constants
 
 if __name__ != '__main__':
     # Pass imported entities to __main__
@@ -18,8 +18,9 @@ if __name__ != '__main__':
     print("Femap model imported as 'app'")
     __main__.fc = fc
     print("Femap constants imported as 'fc'")
-    __main__.pf = pyfemap
+    __main__.pf = pyfemap1142
     print("Femap API library imported as 'pf'")
+
 
 # some useful shorcut functions
 def pickEntities(entityType, clear=True, prompt="Select entities..."):
@@ -41,6 +42,7 @@ def pickEntities(entityType, clear=True, prompt="Select entities..."):
         print(response)
 
     return setArray
+
 
 def pickID(entityType, prompt="Select entities..."):
     '''Prompts user to pick a single entity and returns the ID'''

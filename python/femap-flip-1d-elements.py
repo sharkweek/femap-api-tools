@@ -4,10 +4,10 @@ import sys
 from pyfemap import constants as fc  # the Femap constants library
 
 try:
-    existObj = pythoncom.connect(pf.model.CLSID) #Grabs active model
+    existObj = pythoncom.connect(pf.model.CLSID)  # Grabs active model
     app = pf.model(existObj)
 except:
-    sys.exit("Femap is not open") #Exits program if there is no active femap model
+    sys.exit("Femap is not open")  # Exits program if there is no active femap model
 
 app.feAppMessage(fc.FCM_COMMAND, "Flip 1D Element Orientation")
 
@@ -32,4 +32,4 @@ for each in setArray:
     if elm.topology == 0 or elm.topology == 1:
         elm.node[0], elm.node[1] = elm.node[1], elm.node[0]
     else:
-        app.feAppMessage(fc.FCM_NORMAL, "Non-1D element skipped..."
+        app.feAppMessage(fc.FCM_NORMAL, "Non-1D element skipped...")

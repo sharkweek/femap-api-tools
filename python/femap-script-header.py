@@ -7,7 +7,7 @@ import sys
 from pyfemap import constants as fc  # the Femap constants library
 
 try:
-    existObj = pythoncom.connect(pf.model.CLSID) #Grabs active model
+    existObj = pythoncom.connect(pf.model.CLSID)  # Grabs active model
     app = pf.model(existObj)
 except:
     sys.exit("Femap is not open") #Exits program if there is no active femap model
