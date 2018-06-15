@@ -19,13 +19,12 @@ if __name__ != '__main__':
     __main__.fc = fc
     print("Femap constants imported as 'fc'")
     __main__.pf = pyfemap1142
-    print("Femap API library imported as 'pf'")
+    print("Femap v11.4.2 API library imported as 'pf'")
 
 
 # some useful shorcut functions
-def pickEntities(entityType, clear=True, prompt="Select entities..."):
-    '''Prompts user to select multiple entities and returns the IDs as an
-    array'''
+def pick_entities(entityType, clear=True, prompt="Select entities..."):
+    """Return user-selected the IDs as an array."""
 
     pickSet = app.feSet
     pickSet.Select(entityType, clear, prompt)
@@ -44,8 +43,8 @@ def pickEntities(entityType, clear=True, prompt="Select entities..."):
     return setArray
 
 
-def pickID(entityType, prompt="Select entities..."):
-    '''Prompts user to pick a single entity and returns the ID'''
+def pick_id(entityType, prompt="Select entities..."):
+    """Prompt user to pick a single entity and returns the ID."""
 
     pickSet = app.feSet
     rc, id = pickSet.SelectID(entityType, prompt)
