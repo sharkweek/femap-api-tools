@@ -47,6 +47,16 @@ def pick_id(entityType, prompt="Select entities..."):
     """Prompt user to pick a single entity and returns the ID."""
 
     pickSet = app.feSet
-    rc, id = pickSet.SelectID(entityType, prompt)
+    rc, enity_id = pickSet.SelectID(entityType, prompt)
 
-    return id
+    #  Ensure user selects a valide entity
+    if rc == fc.FE_CANCEL:
+        response = "User cancelled selection..."
+        app.feAppMessage(fc.FCM_ERROR, response)
+        print(response)
+    elif rc == fc.FE_NOT_EXIST:
+        response = "No entities of selected type exist."
+        app.feAppMessage(fc.FCM_ERROR, response)
+        print(response)
+
+    return enity_id
