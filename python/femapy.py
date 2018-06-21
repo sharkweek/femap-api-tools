@@ -1,0 +1,62 @@
+import __main__
+import pythoncom
+import pyfemap1142  # the Python Femap API library
+import sys
+
+try:
+    existObj = pythoncom.connect(pyfemap1142.model.CLSID)  # Grabs active model
+except:
+    sys.exit("Femap not open")  # Exits program if there is no active femap
+    # model
+
+app = pyfemap1142.model(existObj)
+fc = pyfemap1142.constants
+
+if __name__ != '__main__':
+    # Pass imported entities to __main__
+    __main__.app = app
+    print("Femap model imported as 'app'")
+    __main__.fc = fc
+    print("Femap constants imported as 'fc'")
+    __main__.pf = pyfemap1142
+    print("Femap v11.4.2 API library imported as 'pf'")
+
+
+# some useful shorcut functions
+def pick_entities(entityType, clear=True, prompt="Select entities..."):
+    """Return user-selected the IDs as an array."""
+
+    pickSet = app.feSet
+    pickSet.Select(entityType, clear, prompt)
+
+    rc, _, setArray = pickSet.GetArray()  # get the array
+    del _, pickSet  # delete intermediate variables from cache
+    if rc == fc.FE_CANCEL:
+        response = "User cancelled selection..."
+        app.feAppMessage(fc.FCM_ERROR, response)
+        print(response)
+    elif rc == fc.FE_NOT_EXIST:
+        response = "No entities of selected type exist."
+        app.feAppMessage(fc.FCM_ERROR, response)
+        print(response)
+
+    return setArray
+
+
+def pick_id(entityType, prompt="Select entities..."):
+    """Prompt user to pick a single entity and returns the ID."""
+
+    pickSet = app.feSet
+    rc, enity_id = pickSet.SelectID(entityType, prompt)
+
+    #  Ensure user selects a valide entity
+    if rc == fc.FE_CANCEL:
+        response = "User cancelled selection..."
+        app.feAppMessage(fc.FCM_ERROR, response)
+        print(response)
+    elif rc == fc.FE_NOT_EXIST:
+        response = "No entities of selected type exist."
+        app.feAppMessage(fc.FCM_ERROR, response)
+        print(response)
+
+    return enity_id
