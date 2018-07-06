@@ -20,6 +20,7 @@ Sub Main
 
     Dim success As Long
 
+    ' prompt user to select points
     rc = pSet.Select(FT_POINT, True, "Select points...")
     If rc = FE_NOT_EXIST Then
         App.feAppMessage(FCM_ERROR, "Selected points do not exist.")
@@ -27,6 +28,7 @@ Sub Main
         Exit Sub
     End If
 
+    ' prompt for curve selection
     rc = c.SelectID("Select curve to project onto...")
     If rc = FE_NOT_EXIST Then
         App.feAppMessage(FCM_ERROR, "Selected curve does not exist.")
@@ -34,15 +36,14 @@ Sub Main
         Exit Sub
     End If
 
-    success = 0
+    ' move to curve
+    rc = App.feProjectOntoCurve(FT_POINT, pSet.ID, c.ID)
+    If rc = FE_FAIL Then
+        App.feAppMessage(FCM_ERROR, "Points could not be moved to curve.")
+    End If
 
-    Do While p.NextInSet(pSet.ID)
-        rc = App.feProjectOntoCurve(FT_POINT, pSet.ID, c.ID)
-        If rc = FE_OK Then
-            success = success + 1
-        End If
-    Loop
-
+    ' report success
+    success = pSet.Count()
     App.feAppMessage(FCM_NORMAL, Cstr(success) & " points moved onto curve...")
 
 End Sub

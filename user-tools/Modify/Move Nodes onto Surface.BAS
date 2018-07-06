@@ -18,7 +18,7 @@ Sub Main
     Dim n As femap.Node
     Set n = App.feNode
 
-    Dim success As Long
+    Dim i As Long
     Dim attach As Boolean
     Dim n_count As Long
     Dim attach_id() As Long
@@ -56,17 +56,18 @@ Sub Main
     End If
 
     ' move nodes onto surface
-    success = 0
+    i = 0
     Do While n.NextInSet(nSet.ID)
-        rc = App.feProjectOntoSurface(FT_NODE, nSet.ID, s.ID)
-        If rc = FE_OK Then
-            attach_type(success) = FT_SURFACE
-            attach_id(success) = s.ID
-            success = success + 1
-        End If
+        attach_type(i) = FT_SURFACE
+        attach_id(i) = s.ID
+        i = i + 1
     Loop
+    rc = App.feProjectOntoSurface(FT_NODE, nSet.ID, s.ID)
+    If rc = FE_FAIL Then
+        App.feAppMessage(FCM_ERROR, "Nodes could not be moved to surface.")
+    End If
 
-    App.feAppMessage(FCM_NORMAL, Cstr(success) & " nodes moved onto surface...")
+    App.feAppMessage(FCM_NORMAL, Cstr(i) & " nodes moved onto surface...")
 
     ' associate nodes with surface
     If attach Then
@@ -75,7 +76,7 @@ Sub Main
         App.feMeshDetach(FT_NODE, nSet.ID, 0, 0, False)
         rc = App.feMeshAttachNodes(n_count, n_array, attach_type, attach_id)
         If rc = FE_OK Then
-        App.feAppMessage(FCM_NORMAL, Cstr(success) & " nodes associated with surface...")
+        App.feAppMessage(FCM_NORMAL, Cstr(i) & " nodes associated with surface...")
         End If
     End If
 
