@@ -6,8 +6,7 @@ Sub Main
     Dim App As femap.model
     Set App = feFemap()
 
-        App.feAppMessage(FCM_COMMAND, _
-            "Renumber Selected Groups Alphabetically")
+        App.feAppMessage(FCM_COMMAND, "Renumber Selected Groups Alphabetically")
 
     Dim g As femap.Group
     Set g = App.feGroup

@@ -37,11 +37,6 @@ Sub Main
     Dim i As Long
     Dim nFreeCount As Long
     Dim nFreeData As Variant
-    'Dim bLineElem As Variant
-    'Dim n_count As Long
-    'Dim attach As Boolean
-    'Dim attach_id() As Long
-    'Dim attach_type() As Long
 
     ' prompt to select elements
     rc = eSet.Select(FT_ELEM, True, "Select elements to smooth...")
@@ -57,8 +52,11 @@ Sub Main
         Loop
     ElseIf rc = FE_OK and eSet.Count() <= 1 Then
         App.feAppMessage(FCM_ERROR, "Must select more than one element.")
+        Exit Sub
     ElseIf rc =FE_NOT_EXIST Then
         App.feAppMessage(FCM_ERROR, "One or more selected elements do not exist.")
+        Exit Sub
+    Else
         Exit Sub
     End If
 
@@ -66,6 +64,7 @@ Sub Main
     rc = s.SelectID("Select surface...")
     If rc = FE_NOT_EXIST Then
         App.feAppMessage(FCM_ERROR, "Selected surface does not exist.")
+        Exit Sub
     ElseIf rc = FE_CANCEL Then
         Exit Sub
     End If
@@ -80,8 +79,8 @@ Sub Main
         i = i + 1
     Loop
 
-    ' prompt for smoothing options
-    Begin Dialog UserDialog 470,91,"Smoothing Options",.DialogFunc
+    ' user dialog for smoothing options
+    Begin Dialog UserDialog 1250,700,470,91,"Smoothing Options",.DialogFunc
         GroupBox 20,7,130,77,"Method",.method_group_box
         OptionGroup .method
             OptionButton 40,28,100,14,"Laplacian",.laplacian
@@ -96,7 +95,11 @@ Sub Main
         PushButton 360,7,100,21,"Fix Nodes...",.fix_nodes
     End Dialog
     Dim dlg As UserDialog
-    Dialog dlg
+
+    ' prompt user to select smoothing options
+    If Dialog(dlg) = 0 Then
+    	Exit Sub  ' exit if user hits 'Cancel'
+    End If
 
     ' validate smoothing tolerance
     If IsNumeric(dlg.tolerance) Then
@@ -135,18 +138,8 @@ Sub Main
     smoothed_nodes.AddSetRule(eSet.ID, FGD_NODE_ONELEM)
     smoothed_nodes.RemoveSet(fixed_nodes.ID)  ' remove the fixed nodes from set
 
-    'n_count = smoothed_nodes.Count()
-    'ReDim attach_id(n_count)
-    'ReDim attach_type(n_count)
-
     ' project smoothed nodes to surface
-    i = 0
     smoothed_nodes.Reset()
-    'Do While n.NextInSet(smoothed_nodes.ID)
-    '    attach_type(i) = FT_SURFACE
-    '    attach_id(i) = s.ID
-    '    i = i + 1
-    'Loop
     rc = App.feProjectOntoSurface(FT_NODE, smoothed_nodes.ID, s.ID)
     If rc = FE_FAIL Then
         App.feAppMessage(FCM_ERROR, "Nodes could not be moved to surface.")
@@ -164,16 +157,6 @@ Sub Main
 
     ' associate nodes and elements with surface
     If attach Then
-        'smoothed_nodes.GetArray(n_count, n_array)
-
-        ' attach nodes
-        'App.feMeshDetach(FT_NODE, smoothed_nodes.ID, 0, 0, False)
-        'rc = App.feMeshAttachNodes(n_count, n_array, attach_type, attach_id)
-        'If rc = FE_OK Then
-        'App.feAppMessage(FCM_NORMAL, Cstr(success) & " nodes associated with 'surface...")
-        'End If
-
-        'attach elements
         rc = App.feMeshAttach(FT_ELEM, eSet.ID, FT_SURFACE, s.ID, True)
     End If
 
@@ -186,6 +169,8 @@ Function DialogFunc(DlgItem As String, Action as Integer, SuppValue As Long) As 
     Select Case Action
         Case 1  ' dialog box initialization
             Beep
+            DlgText "iterations", "100"
+            DlgText "tolerance", "0.001"
         Case 2  ' value changing or button pressed
             If DlgItem = "fix_nodes" Then
                 fixed_nodes.Select(FT_NODE, False, "Select fixed nodes...")

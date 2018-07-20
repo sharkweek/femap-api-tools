@@ -29,7 +29,6 @@ Sub Main
         Exit Sub
     End If
 
-
     n_count = 0
     Do While c.NextInSet(cSet.ID)
         nSet.Clear()
