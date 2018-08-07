@@ -29,7 +29,7 @@ Sub Main
     rc = eSet.Select(FT_ELEM, True, "Select elements...")
 
     ' prompt for first node
-    rc = n_1.SelectID("Select node to replace...")
+    rc = n_1.SelectID("Select node to abandon...")
     If rc = FE_CANCEL Then
         Exit Sub
     End If
