@@ -1,3 +1,5 @@
+' TODO: add edge smoothing option
+
 ' dimension as public for DialogFunc to access
 Dim App As femap.model
 Dim fixed_nodes as femap.Set
@@ -19,6 +21,9 @@ Sub Main
 
     Dim n As femap.Node
     Set n = App.feNode
+
+    Dim propSet As femap.Set
+    Set propSet = App.feSet
 
     Set fixed_nodes = App.feSet
 
@@ -43,11 +48,10 @@ Sub Main
     If rc = FE_OK and eSet.Count() > 1 Then
         ' make sure all elements are shell elements
         Do While e.NextInSet(eSet.ID)
-            Select Case e.topology
-                Case 2 To 5  'do nothing if element is a shell element
+            Select Case e.type
+                Case 10 To 22  'do nothing if element is a shell element
                 Case Else
-                    App.feAppMessage(FCM_ERROR, "One or more selected elements are not shell elements.")
-                    Exit Sub
+                    propSet.RemoveRule(e.type, FGD_ELEM_BYTYPE)
             End Select
         Loop
     ElseIf rc = FE_OK and eSet.Count() <= 1 Then
@@ -80,7 +84,7 @@ Sub Main
     Loop
 
     ' user dialog for smoothing options
-    Begin Dialog UserDialog 1250,700,470,91,"Smoothing Options",.DialogFunc
+    Begin Dialog UserDialog 1050,845,470,91,"Smoothing Options",.DialogFunc
         GroupBox 20,7,130,77,"Method",.method_group_box
         OptionGroup .method
             OptionButton 40,28,100,14,"Laplacian",.laplacian
@@ -169,7 +173,7 @@ Function DialogFunc(DlgItem As String, Action as Integer, SuppValue As Long) As 
     Select Case Action
         Case 1  ' dialog box initialization
             Beep
-            DlgText "iterations", "100"
+            DlgText "iterations", "1000"
             DlgText "tolerance", "0.001"
         Case 2  ' value changing or button pressed
             If DlgItem = "fix_nodes" Then
