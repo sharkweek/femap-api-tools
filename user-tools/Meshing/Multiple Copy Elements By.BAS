@@ -37,8 +37,7 @@ Sub Main
         If rc = FE_FAIL Then
             App.feAppMessage(FCM_ERROR, "Unable to copy elements.")
         End If
+        App.feViewRegenerate(0)
     Loop
-
-    App.feViewRegenerate(0)
 
 End Sub

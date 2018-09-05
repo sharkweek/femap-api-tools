@@ -62,8 +62,8 @@ Sub Main
         Exit Sub
     ElseIf rc = FE_CANCEL Then
         Exit Sub
-    ElseIf nSet.Count() < 3 Then
-        App.feAppMessage(FCM_ERROR, "Must select 3 or more additional nodes...")
+    ElseIf nSet.Count() < 2 Then
+        App.feAppMessage(FCM_ERROR, "Must select 2 or more additional nodes...")
         Exit Sub
     End If
     nSet.Add(n.ID)

@@ -42,26 +42,37 @@ Sub Main
     Dim i As Long
     Dim nFreeCount As Long
     Dim nFreeData As Variant
+    Dim removed As Boolean
 
     ' prompt to select elements
     rc = eSet.Select(FT_ELEM, True, "Select elements to smooth...")
     If rc = FE_OK and eSet.Count() > 1 Then
-        ' make sure all elements are shell elements
+        ' remove non-planar elements
+        removed = False
         Do While e.NextInSet(eSet.ID)
             Select Case e.type
                 Case 10 To 22  'do nothing if element is a shell element
                 Case Else
                     propSet.RemoveRule(e.type, FGD_ELEM_BYTYPE)
+                    removed = True
             End Select
         Loop
+
+        If removed Then
+            App.feAppMessage(FCM_HIGHLIGHT, "Non-planar elements removed from selection set...")
+        End If
+
     ElseIf rc = FE_OK and eSet.Count() <= 1 Then
         App.feAppMessage(FCM_ERROR, "Must select more than one element.")
         Exit Sub
+
     ElseIf rc =FE_NOT_EXIST Then
         App.feAppMessage(FCM_ERROR, "One or more selected elements do not exist.")
         Exit Sub
+
     Else
         Exit Sub
+
     End If
 
     ' prompt to select surface

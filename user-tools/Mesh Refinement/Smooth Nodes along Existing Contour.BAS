@@ -5,6 +5,7 @@
 
 ' TODO: Add biasing; l_i / l_(i-1) = B^(1/(n-1)) for the i-th element where
 '       `B` is the biasing ratio and `n` is the number of elements
+' TODO: have nodes automatically sorted by their distance from the first node
 
 Sub Main
     Dim App As femap.model

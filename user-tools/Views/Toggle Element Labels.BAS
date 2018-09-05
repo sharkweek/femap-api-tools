@@ -23,9 +23,9 @@ Sub Main
     End With
 
     If View.Label(FVI_ELEMENT) Then
-        App.feAppMessage(FCM_COMMAND, "Toggle Element Labels On")
+        App.feAppMessage(FCM_COMMAND, "Element Labels On")
     Else
-        App.feAppMessage(FCM_COMMAND, "Toggle Element Labels Off")
+        App.feAppMessage(FCM_COMMAND, "Element Labels Off")
     End If
 
 End Sub
