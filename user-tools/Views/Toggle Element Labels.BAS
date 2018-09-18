@@ -1,3 +1,5 @@
+' Toggle element ID labels
+
 Sub Main
     Dim App As femap.model
     Set App = feFemap()

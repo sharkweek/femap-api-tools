@@ -120,10 +120,10 @@ Sub Main
         Title = Replace(Title," ", "_") 'Replace space with underscore
         grFileName = modelFilePath & Title 'Sets temp file name
 
-                App.feAppMessage(FCM_COMMAND,"Exported to file: " & grFileName & ".bdf")
-                App.feFileWriteNastran(8,grFileName)
+        App.feFileWriteNastran(8,grFileName)
 
         FixFile(grFileName) 'Function that writes correct data to new final file
+        App.feAppMessage(FCM_COMMAND,"Exported to file: " & grFileName & ".bdf")
         DeleteTempFile(grFileName)  'Function that deletes the temporary file
 
     Wend
