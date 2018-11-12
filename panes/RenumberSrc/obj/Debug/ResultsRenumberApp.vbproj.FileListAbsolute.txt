@@ -1,0 +1,5 @@
+C:\Users\aperez\Documents\GitLab\femap-api-tools\panes\RenumberSrc\obj\Debug\ResultsRenumberApp.vbprojAssemblyReference.cache
+C:\Users\aperez\Documents\GitLab\femap-api-tools\panes\RenumberSrc\obj\Debug\Interop.femap.dll
+C:\Users\aperez\Documents\GitLab\femap-api-tools\panes\RenumberSrc\obj\Debug\ResultsRenumberApp.vbproj.ResolveComReference.cache
+C:\Users\aperez\Documents\GitLab\femap-api-tools\panes\RenumberSrc\obj\Debug\ResultsRenumberApp.Form1.resources
+C:\Users\aperez\Documents\GitLab\femap-api-tools\panes\RenumberSrc\obj\Debug\ResultsRenumberApp.vbproj.GenerateResource.cache
