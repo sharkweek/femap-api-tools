@@ -1,8 +1,12 @@
+' Author: Andy Perez
+' Date: 2018-11
+' Femap Version: 12.0
+
 Sub Main
     Dim App As femap.model
     Set App = feFemap()
 
-    App.feAppMessage(FCM_COMMAND, "Batch Export Multiple BDFs")
+    App.feAppMessage(FCM_COMMAND, "Export Multiple BDFs")
     App.feAppMessage(FCM_NORMAL, "Batch export multiple analysis sets as Nastran *.bdfs.")
 
     Dim rc As Long
@@ -40,7 +44,7 @@ Sub Main
     rc = App.feAppMessageBox(3, "Do you wish to export with empty Bulk Data sections?")
 
     If rc = FE_FAIL Then  'If user decides to keep Bulk Data sections
-        While deck.NextInSet(deckSet.ID) = FE_OK
+        Do While deck.NextInSet(deckSet.ID) = FE_OK
 
             deck.Active = deckSet.CurrentID
             'clean title
@@ -52,7 +56,7 @@ Sub Main
             deckTitle = Replace(deck.Title,"%", "percent") & ".dat"
             App.feFileWriteNastran(8, deckTitle)
 
-        Wend
+        Loop
 
         App.feAppMessage(FCM_NORMAL, Cstr(deckSet.Count) & " analysis sets exported...")
 
@@ -62,7 +66,7 @@ Sub Main
         emptyGroup.Put(emptyGroup.NextEmptyID)
 
         'Write out each deck in the set
-        While deck.NextInSet(deckSet.ID) = FE_OK
+        Do While deck.NextInSet(deckSet.ID) = FE_OK
 
             'store original deck properties
             deck.Get(deckSet.CurrentID)
@@ -87,7 +91,7 @@ Sub Main
             deck.NasBulkGroupID = analysisGroupID
             deck.Put(deck.ID)
 
-        Wend
+        Loop
 
         'Delete empty group
         emptyGroup.Delete(emptyGroup.ID)

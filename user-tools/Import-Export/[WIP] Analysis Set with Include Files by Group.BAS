@@ -1,9 +1,26 @@
+' This script writes out a selected analysis set as an NX Nastran *.dat file
+' substituting all bulk data for `INCLUDE` statements. User-selected groups
+' are written out as a separate bulk data file as referred to by the `INCLUDE`
+' statements in the master *.dat file.
+'
+' The general flow of the script is as follows:
+'   1. Prompt user for analysis set
+'   2. Prompt user for field type
+'   3. Prompt user for groups to write to bulk data section
+'   4. Create a dummy analysis set for writing out INCLUDE files
+'   5. Write out selected analysis set with empty bulk data section
+'   6. Loop through each layer, writing out a *.bdf for each one making sure
+'      only to write out entities that are contained in the bulk data group
+'      request and stripping all case control statements, parameters, etc.
+'   7. Rewrite the analysis *.dat file, substituting in INCLUDE statements
+'      for each of the created *.bdfs
+
 Sub Main
     Dim App As femap.model
     Set App = feFemap()
 
-    App.feAppMessage(FCM_COMMAND, "Analysis Set Using Include Files")
-    App.feAppMessage(FCM_NORMAL, "Write out a *.dat file in which all BULK DATA entities have been parsed out by Femap layers. Each")
+    App.feAppMessage(FCM_COMMAND, "Analysis Set with Include Files by Group")
+    App.feAppMessage(FCM_NORMAL, "Write out a *.dat file in which all BULK DATA entities have been parsed out by Femap groups. Each")
     App.feAppMessage(FCM_NORMAL, "layer is written out to a separate *.bdf and an INCLUDE statement substituted in its place within")
     App.feAppMessage(FCM_NORMAL, "the *.dat file.")
 
@@ -13,15 +30,20 @@ Sub Main
     Set dummyDeck = App.feAnalysisMgr
     Dim dummyDeckID As Long
     Dim dummyDeckTitle as String 'Placeholder variable to replace spaces with underscores
-    Dim dummyDeckFormat As Integer  'field format for write deck
+    Dim field_format As Integer  'field format for write deck
 
     Dim pickedDeck As femap.AnalysisMgr  ' The run deck to parse
     Set pickedDeck = App.feAnalysisMgr
     Dim pickedDeckTitle As String
     Dim pickedDeckFileName As String
 
-    Dim pickedGroup As femap.Group
-    Set pickedGroup = App.feGroup
+    Dim groupSet As femap.Set
+    Set groupSet = App.feSet
+
+    Dim grp As femap.Group
+    Set grp = App.feGroup
+
+    Dim origGroupID As Long
 
     Dim layer As femap.Layer
     Set layer = App.feLayer
@@ -90,35 +112,35 @@ Sub Main
         CancelButton 170,84,100,28
     End Dialog
     Dim dlg As UserDialog
-    dummyDeckFormat = Dialog(dlg)
+    field_format = Dialog(dlg)
 
-    If dummyDeckFormat = -1 Then   'user pressed okay
-        dummyDeckFormat = dlg.ListBox1
-    ElseIf dummyDeckFormat = 0 Then 'terminates macro if user cancels
+    If field_format = -1 Then   'user pressed okay
+        field_format = dlg.ListBox1
+    ElseIf field_format = 0 Then 'terminates macro if user cancels
         App.feAppMessage(FCM_NORMAL,"User pressed Cancel...")
         End
     End If
 
-    'Set properties of dummy analysis set
-    dummyDeck.ID = dummyDeck.NextEmptyID
-    dummyDeck.NasBulkLargeField = dummyDeckFormat  'Updates field format
-    dummyDeck.title = "Dummy Deck for Group Export"  'Names dummy set
-    dummyDeck.Solver = 36        'Sets Solver to NX Nastran
-    dummyDeck.AnalysisType = 2     'Sets AnalysisType to Modes for creation of less data
-    dummyDeck.NasCnlSkipNLPARM = True   'Skips more unneeded data to be written out
-    dummyDeck.SkipStandard = True   'Skips more unneeded data to be written out
+    ' prompt user to select groups for bulk data section
+    rc = groupSet.Select(FT_GROUP, True, "Select groups...")
+    If rc = FE_CANCEL Then
+        Exit Sub
+    ElseIf rc = FE_FAIL Then
+        rc = App.feAppMessage(FCM_ERROR, "Selected groups do not exist.")
+    End If
 
-    'Set pickedDeck write group to an empty group so it doens't write out the full BDF before stripping it
-    pickedDeck.Get(pickedDeck.ID)
-    pickedGroup.ID = pickedDeck.NasBulkGroupID
+    'Set pickedDeck to write out an empty group for minimal data
     emptyGroup.title = "EMPTY"
-    emptyGroup.Put(emptyGroup.NextEmptyID)  'creates the empty group in the model
-    pickedDeck.NasBulkGroupID = emptyGroup.ID  'assign the empty group to the selected run deck
-    pickedDeck.Put(pickedDeck.ID)
-    pickedDeck.Active = pickedDeck.ID  'Activate pickedDeck
+    emptyGroupID = emptyGroup.NextEmptyID
+    emptyGroup.Put(emptyGroupID)
 
-    'Write out picked deck here and store name
-    pickedDeckTitle = Replace(pickedDeck.title," ", "_") 'Replace spaces with underscores
+    origGroupID = pickedDeck.NasBulkGroupID
+    pickedDeck.NasBulkGroupID = emptyGroup.ID
+    pickedDeck.Put(pickedDeck.ID)
+    pickedDeck.Active = pickedDeck.ID  ' feFileWriteNastran uses the active analysis set
+
+    ' scrub name for illegal filename characters
+    pickedDeckTitle = Replace(pickedDeck.title," ", "_")
     pickedDeckTitle = Replace(pickedDeckTitle, "_-_", "-")
     pickedDeckTitle = Replace(pickedDeckTitle, "\", "-")
     pickedDeckTitle = Replace(pickedDeckTitle, "/", "-")
@@ -126,58 +148,68 @@ Sub Main
     pickedDeckTitle = Replace(pickedDeckTitle, ":", "-")
     pickedDeckTitle = Replace(pickedDeckTitle, "&", "and")
     pickedDeckTitle = Replace(pickedDeckTitle, "%", "")
-    pickedDeckFileName = modelFilePath & pickedDeckTitle 'Sets file name with path for picked deck
+
+    ' write deck
+    pickedDeckFileName = modelFilePath & pickedDeckTitle
     App.feFileWriteNastran(8, pickedDeckFileName)
 
+    ' prep dummy deck for writing out groups
+    With dummyDeck
+        .ID = dummyDeck.NextEmptyID
+        dummyDeckID = dummyDeck.ID
+        .NasBulkLargeField = field_format
+        .title = "Dummy Deck for Group Export"
+        .Solver = 36  'NX Nastran solver
+        .AnalysisType = 2  ' modes solution for creation of less data
+        .NasCnlSkipNLPARM = True  ' minimizes data in *.dat
+        .SkipStandard = True  ' minimizes data in *.dat
+        .NasBulkOn = True
+        .Put(dummyDeckID)
+    End With
+
+    ' create *.bdfs from selected groups
     j = 0
-    allLayerSet.AddAll(FT_LAYER)
-    includeGroup.ID = includeGroup.NextEmptyID
-    'Loop reads out all layer information seperately
-    While layer.NextInSet(allLayerSet.ID) = FE_OK
+    While grp.NextInSet(groupSet.ID) = FE_OK
+        grp.Get(grp.ID)
 
-        ' Group objects into includeGroup by layer
-        i = 0  'reset counter
-        layerSet.Clear
-        layerSet.Add(layer.ID)  'Populate a layer set for adding to includeGroupSet
-        Do While i <= 168  'Maximum entityType value is 168
-            includeGroupSet.AddEntitiesOnLayer(layerSet.ID, i) 'Add entities form layer to set
-            includeGroup.SetAdd(i, includeGroupSet.ID)  'Add entities from set to group
-            includeGroupSet.Clear  'Clear all entities from set
-            i = i + 1  'increment counter
-        Loop
+        ' scrub group name for illegal filename characters
+        dummyDeckTitle = grp.title
+        dummyDeckTitle = Replace(pickedDeck.title," ", "_")
+        dummyDeckTitle = Replace(dummyDeckTitle, "_-_", "-")
+        dummyDeckTitle = Replace(dummyDeckTitle, "\", "-")
+        dummyDeckTitle = Replace(dummyDeckTitle, "/", "-")
+        dummyDeckTitle = Replace(dummyDeckTitle, "*", "-")
+        dummyDeckTitle = Replace(dummyDeckTitle, ":", "-")
+        dummyDeckTitle = Replace(dummyDeckTitle, "&", "and")
+        dummyDeckTitle = Replace(dummyDeckTitle, "%", "")
 
-        includeGroupSet.Add(includeGroup.ID)  'add group with all layer entities to dummy group set
-        App.feGroupBoolean2(includeGroupSet.ID, pickedGroup.ID, 2, includeGroup.ID,"INCLUDE_DUMMY_GROUP")  'add entities only in both group and current layer to new group
-        includeGroup.Put(includeGroup.ID)
+        includeFileName = modelFilePath & dummyDeckTitle & ".include"
 
-        ' Set dummyDeck properties
-        dummyDeck.NasBulkOn = True
-        dummyDeck.NasBulkGroupID = includeGroup.ID 'Set group to includeGroup just created by the boolean operation
-        dummyDeck.Put(dummyDeck.ID)    'Adds dummy analysis to femap session
-        dummyDeck.Active = dummyDeck.ID  'Activates dummy analysis set
-        dummyDeckTitle = layer.title
-        dummyDeckTitle = Replace(dummyDeckTitle," ", "_") 'Replace spaces with underscores
-        includeFileName = modelFilePath & dummyDeckTitle 'Sets temp file name
+        With dummyDeck
+            .Get(dummyDeckID)
+            .NasBulkGroupID = grp.ID
+            .Put(dummyDeckID)
+            .Active = dummyDeckID
+        End With
 
-        App.feAppMessage(FCM_COMMAND,"Exported to file: " & includeFileName & ".include")
-        App.feFileWriteNastran(8, includeFileName)
-
-        CleanBulk(includeFileName) 'Function that writes correct data to new final file
-        DeleteTempFile(includeFileName)  'Function that deletes the temporary file
-        includeGroup.RangeDeleteAll(-1)  'Delete all entities from group
-        includeGroup.Delete(includeGroup.ID)
+        ' write out include file
+        rc = App.feFileWriteNastran(8, includeFileName)
+        If rc = FE_OK Then
+            App.feAppMessage(FCM_COMMAND,"Exported to file: " & includeFileName)
+            CleanBulk(includeFileName) 'Function that writes correct data to new final file
+            DeleteTempFile(includeFileName)  'Function that deletes the temporary file
+        Else
+            App.feAppMessage(FCM_ERROR, "Error writing out " & includeFileName)
+        End If
 
         ' Add file name to include statement array
         ReDim Preserve includeFiles(j + 1)
-        includeFiles(j) = "INCLUDE '" & dummyDeckTitle & ".include'"
+        includeFiles(j) = "INCLUDE '" & dummyDeckTitle & "'"
         j = j + 1
-
     Wend
 
-    includeGroup.Delete(includeGroup.ID)' Delete dummy group
-
     'Reassign the original analysis group to the analysis set when done
-    pickedDeck.NasBulkGroupID = pickedGroup.ID
+    pickedDeck.NasBulkGroupID = origGroupID
     pickedDeck.Put(pickedDeck.ID)
 
     'Delete empty group
