@@ -3,11 +3,11 @@
 ' Femap Version: 12.0
 
 Sub Main
-    Set App = feFemap()
     Dim App As femap.model
+    Set App = feFemap()
 
     App.feAppMessage(FCM_COMMAND, "Working View")
-    App.feAppMessage(FCM_NORMAL, "Change.")
+    App.feAppMessage(FCM_NORMAL, "Changes the settings of the active view.")
 
     Dim rc As Long
 
@@ -31,7 +31,7 @@ Sub Main
         .Label(FVI_LABEL) = 38
         .ColorMode(FVI_LABEL) = 1
         .Color(FVI_LABEL) = 149
-        .Value1(FVI_LABEL) = 1
+        .RenderPushLabel = 1
 
         .Draw(FVI_CSYS) = False
         .Label(FVI_CSYS) = 1
@@ -142,8 +142,8 @@ Sub Main
 
         .Draw(FVI_LOAD_VECTORS) = False
         .Label(FVI_LOAD_VECTORS) = 1
-        .Value1(FVI_LOAD_VECTORS) = 100
-        .Value2(FVI_LOAD_VECTORS) = 25
+        .LoadVecLength = 100
+        .LoadVectorMinScale = 25
 
         .Draw(FVI_LOAD_BODY) = True
         .Label(FVI_LOAD_BODY) = 1
@@ -308,7 +308,7 @@ Sub Main
         .Color(FVI_FREE_EDGE) = 24600
 
         .Draw(FVI_SHRINK_ELEM) = False
-        .Value1(FVI_SHRINK_ELEM) = 70
+        .ShrinkFactor = 70
 
         .Draw(FVI_FILL_ELEM) = True
         .Label(FVI_FILL_ELEM) = 0
@@ -323,31 +323,32 @@ Sub Main
         .Label(FVI_FEATURE_LINE) = 1
         .ColorMode(FVI_FEATURE_LINE) = 1
         .Color(FVI_FEATURE_LINE) = 28676
-        .Value1(FVI_FEATURE_LINE) = 5
+        .FeatureLineAngle = 5
 
         .Draw(FVI_RENDER_OPTIONS) = False
         .Label(FVI_RENDER_OPTIONS) = 1
         .ColorMode(FVI_RENDER_OPTIONS) = 0
-        .Value1(FVI_RENDER_OPTIONS) = 50
-        .Value2(FVI_RENDER_OPTIONS) = 100
+        .RenderPushForward = 50  ' offset factor
+        .RenderPushUnit = 100  ' offset
 
         .Draw(FVI_PERF_GRAPHICS) = False
         .Label(FVI_PERF_GRAPHICS) = 3
         .ColorMode(FVI_PERF_GRAPHICS) = 0
-        .Value1(FVI_PERF_GRAPHICS) = 1000
+        '.FilledEdgeOffset = 1000  ' unknown property
 
         .Draw(FVI_TRANSPARENCY) = False
-        .Label(FVI_TRANSPARENCY) = 75
+        .TransparencyPercent = 75
 
         .Draw(FVI_SHADING) = True
         .Label(FVI_SHADING) = 0
         .ColorMode(FVI_SHADING) = 3
         .Color(FVI_SHADING) = 124
-        .Value1(FVI_SHADING) = 25
-        .Value2(FVI_SHADING) = 1000
+        .AmbientLight = 25
+        .SpotlightDist = 1000
 
         .Draw(FVI_PERSPECTIVE) = False
-        .Value1(FVI_PERSPECTIVE) = 22.5
+        .PerspectiveDist = 22.5
+        .PerspectiveAngle = 22.5
 
         ' not used
         '.Draw(FVI_STEREO)
@@ -369,7 +370,7 @@ Sub Main
         .Label(FVI_VIEW_AXES) = 1
         .ColorMode(FVI_VIEW_AXES) = 5
         .Color(FVI_VIEW_AXES) = 60
-        .Value1(FVI_VIEW_AXES) = 13
+        '.AxisSize = 13  ' unknown property name
 
         .Draw(FVI_ORIGIN) = True
         .Color(FVI_ORIGIN) = 56
@@ -388,14 +389,14 @@ Sub Main
         .Draw(FVI_SYMBOL) = True
         .Label(FVI_SYMBOL) = 3
         .ColorMode(FVI_SYMBOL) = 2
-        .Value1(FVI_SYMBOL) = 100
-        .Value2(FVI_SYMBOL) = 100
+        .LoadVecLength = 100
+        .OtherVecLength = 100
 
         .Label(FVI_PREVIEW) = 2
         .Color(FVI_PREVIEW) = 0
 
         .Draw(FVI_ASPECT_RATIO) = True
-        .Value1(FVI_ASPECT_RATIO) = 1
+        .Aspect = 1  ' aspect ratio
 
         .Draw(FVI_CLIP_PLANE) = False
         .Label(FVI_CLIP_PLANE) = 0
@@ -410,31 +411,31 @@ Sub Main
 
         .Label(FVI_DEFORMED_STYLE) = True
         .ColorMode(FVI_DEFORMED_STYLE) = 1
-        .Value1(FVI_DEFORMED_STYLE) = 3
-        .Value2(FVI_DEFORMED_STYLE) = 1
+        .DeformedRelScale = 3  ' scale %
+        .DeformedAbsScale = 1  ' scale act
 
         .Draw(FVI_VECTOR_STYLE) = True
         .Label(FVI_VECTOR_STYLE) = 0
         .ColorMode(FVI_VECTOR_STYLE) = 0
         .Color(FVI_VECTOR_STYLE) = 24
-        .Value1(FVI_VECTOR_STYLE) = 24
+        .ArrowsToLabel = 24  ' Top Percent
 
         .Draw(FVI_ANIMATED_STYLE) = False
         .Label(FVI_ANIMATED_STYLE) = 3
         .ColorMode(FVI_ANIMATED_STYLE) = 0
         .Color(FVI_ANIMATED_STYLE) = 124
-        .Value1(FVI_ANIMATED_STYLE) = 24
-        .Value1(FVI_ANIMATED_STYLE) = 101
+        .AnimationFrames = 24
+        .AnimationDelay = 101  ' in ms
 
         .Label(FVI_DEFORMED) = 0
         .ColorMode(FVI_DEFORMED) = 0
         .Color(FVI_DEFORMED) = 100
-        .Value1(FVI_DEFORMED) = 0
+        .DeformRelativeToNode = 0
 
         .Draw(FVI_UNDEFORMED) = False
         .ColorMode(FVI_UNDEFORMED) = 1
         .Color(FVI_UNDEFORMED) = 100
-        .Value1(FVI_UNDEFORMED) = -100
+        .RenderPushUndeformed = -100  ' render offset %
 
         .Draw(FVI_TRACE_STYLE) = False
         .Label(FVI_TRACE_STYLE) = 0
@@ -444,33 +445,34 @@ Sub Main
         .Draw(FVI_CONTOUR_TYPE) = True
         .Label(FVI_CONTOUR_TYPE) = 2
         .ColorMode(FVI_CONTOUR_TYPE) = 0
-        .ContourElementUnaveraged = True
-        .CountourGroup = True
+        .ContourElemUnaveraged = True
+        .ContourGroup = True
+        .ContourDataSelection = 1  ' none/visible groups
 
         .Draw(FVI_CONTOUR_STYLE) = True
         .Label(FVI_CONTOUR_STYLE) = 2
         .ColorMode(FVI_CONTOUR_STYLE) = 1
-        .Value1(FVI_CONTOUR_STYLE) = 5
-        .Value2(FVI_CONTOUR_STYLE) = 0
+        .ContourLabelFreq = 5
+        .ContourLabelDigits = 0
 
         .Draw(FVI_CONTOUR_LEVELS) = True
         .Label(FVI_CONTOUR_LEVELS) = 0
         .ColorMode(FVI_CONTOUR_LEVELS) = 0
         .Color(FVI_CONTOUR_LEVELS) = 10
-        .Value1(FVI_CONTOUR_LEVELS) = 0
-        .Value2(FVI_CONTOUR_LEVELS) = 0
+        .UserContourValue(11) = 0
+        .UserContourValue(0) = 0
 
         .Draw(FVI_CONTOUR_LEGEND) = True
         .Label(FVI_CONTOUR_LEGEND) = 7
         .ColorMode(FVI_CONTOUR_LEGEND) = 1
         .Color(FVI_CONTOUR_LEGEND) = 149
-        .Value1(FVI_CONTOUR_LEGEND) = 0
-        .Value2(FVI_CONTOUR_LEGEND) = 0
+        .ContourLegendFreq = 0
+        .ContourLegendDigits = 0
 
         .Draw(FVI_CRITERIA_LIMITS) = False
         .Label(FVI_CRITERIA_LIMITS) = 0
-        .Value1(FVI_CRITERIA_LIMITS) = 0
-        .Value2(FVI_CRITERIA_LIMITS) = 0
+        .CriteriaMin = 0
+        .CriteriaMax = 0
 
         .Draw(FVI_CRITERIA_PASS) = True
         .Label(FVI_CRITERIA_PASS) = 1
@@ -486,37 +488,34 @@ Sub Main
         .Label(FVI_BEAM_DIAGRAM) = 0
         .ColorMode(FVI_BEAM_DIAGRAM) = 0
         .Color(FVI_BEAM_DIAGRAM) = 62
-        .Value1(FVI_BEAM_DIAGRAM) = 10
+        .BeamDiagramScale = 10
 
         .Draw(FVI_ISOSURFACE) = False
         .Label(FVI_ISOSURFACE) = 0
         .ColorMode(FVI_ISOSURFACE) = 0
         .Color(FVI_ISOSURFACE) = 4
-        .Value1(FVI_ISOSURFACE) = 0
+        .IsoSurfaceValue = 0
 
         .Draw(FVI_ISOLINE) = False
         .Label(FVI_ISOLINE) = 1
         .ColorMode(FVI_ISOLINE) = 0
         .Color(FVI_ISOLINE) = 0
-        .Value1(FVI_ISOLINE) = 0
 
         .Draw(FVI_STREAMLINE) = False
         .ColorMode(FVI_STREAMLINE) = 0
         .Color(FVI_STREAMLINE) = 4
-        .Value1(FVI_STREAMLINE) = 4
-        .Value2(FVI_STREAMLINE) = 0.01
+        .StreamLineMaxLenFactor = 4
+        .StreamLineMinSpeedPct = 0.01
 
         .Draw(FVI_CONTOUR_VECTOR) = True
         .Label(FVI_CONTOUR_VECTOR) = 7
         .ColorMode(FVI_CONTOUR_VECTOR) = 0
-        .Value1(FVI_CONTOUR_VECTOR) = 1.E-8
-        .Value2(FVI_CONTOUR_VECTOR) = 100.
+        .ContourVecDigits = 1.E-8
+        .ContourVecLength = 100.
 
         .Draw(FVI_CONTOUR_ARROW_OPT) = True
         .Label(FVI_CONTOUR_ARROW_OPT) = 1
         .ColorMode(FVI_CONTOUR_ARROW_OPT) = 0
-        .Value1(FVI_CONTOUR_ARROW_OPT) = 0
-        .Value2(FVI_CONTOUR_ARROW_OPT) = 25
 
         .Draw(FVI_FREEBODY) = True
         .Label(FVI_FREEBODY) = 0
@@ -529,30 +528,32 @@ Sub Main
         .Draw(FVI_FREEBODY_VECTOR) = True
         .Label(FVI_FREEBODY_VECTOR) = 1
         .ColorMode(FVI_FREEBODY_VECTOR) = 0
-        .Value1(FVI_FREEBODY_VECTOR) = 100.
-        .Value1(FVI_FREEBODY_VECTOR) = 100.
+        .FreebodyUnitsPerLength = 100.
+        .FreebodyLength = 100.
 
         .Label(FVI_FREEBODY_TOTALF) = 2
         .ColorMode(FVI_FREEBODY_TOTALF) = 2
         .Color(FVI_FREEBODY_TOTALF) = 15
-        .Value2(FVI_FREEBODY_TOTALF) = 1.
+        .FreebodyTotalForceFactor = 1.
 
         .Label(FVI_FREEBODY_TOTALM) = 2
         .ColorMode(FVI_FREEBODY_TOTALM) = 2
         .Color(FVI_FREEBODY_TOTALM) = 15
-        .Value2(FVI_FREEBODY_TOTALM) = 1.
+        .FreebodyTotalMomentFactor = 1.
 
         .Draw(FVI_FREEBODY_NODAL_F) = 0
         .Label(FVI_FREEBODY_NODAL_F) = 2
         .ColorMode(FVI_FREEBODY_NODAL_F) = 2
         .Color(FVI_FREEBODY_NODAL_F) = 24
-        .Value2(FVI_FREEBODY_NODAL_F) = 1.
+        .FreebodyNodalForceFactor = 1.
 
         .Draw(FVI_FREEBODY_NODAL_M) = 0
         .Label(FVI_FREEBODY_NODAL_M) = 2
         .ColorMode(FVI_FREEBODY_NODAL_M) = 2
         .Color(FVI_FREEBODY_NODAL_M) = 24
-        .Value2(FVI_FREEBODY_NODAL_M) = 1.
+        .FreebodyNodalMomentFactor = 1.
+
+        .Put(.Active)
 
     End With
 
