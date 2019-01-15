@@ -67,7 +67,7 @@ Sub Main
         text 20,50,260,14,"New name:",.title_text
         GroupBox 20,91,140,86,"Rename Type",.rename_groupbox
         GroupBox 180,91,120,64,"Append Options",.append_groupbox
-        GroupBox 20,182,280,47,"Text to Be Replaced:",.replace_groupbox
+        GroupBox 20,182,280,47,"Text to Replace:",.replace_groupbox
         OptionGroup .rename_option
             OptionButton 40,110,90,14,"Overwrite",.overwrite
             OptionButton 40,131,90,14,"Append",.append
@@ -201,8 +201,7 @@ Private Function DialogFunc(DlgItem$, Action%, SuppValue?) As Boolean
     Select Case Action%
         Case 1  ' dialog box initialization
             Beep
-            DlgEnable "prefix", False
-            DlgEnable "suffix", False
+            DlgEnable "append_option", False
             DlgEnable "replace_text", False
         Case 2  ' value changing or button pressed
             If DlgItem = "rename_option" Then
@@ -210,21 +209,18 @@ Private Function DialogFunc(DlgItem$, Action%, SuppValue?) As Boolean
                 Select Case SuppValue
                     Case 0  ' overwrite
                         DlgText "title_text", "New name:"
-                        DlgEnable "prefix", False
-                        DlgEnable "suffix", False
                         DlgEnable "replace_text", False
+                        DlgEnable "append_option", False
                         DialogFunc = True  'do not exit dialog
                     Case 1  ' append
                         DlgText "title_text", "Text to append:"
-                        DlgEnable "prefix", True
-                        DlgEnable "suffix", True
                         DlgEnable "replace_text", False
+                        DlgEnable "append_option", True
                         DialogFunc = True  'do not exit dialog
                     Case 2  'find and replace
-                        DlgText "title_text", "Replacement text:"
-                        DlgEnable "prefix", False
-                        DlgEnable "suffix", False
+                        DlgText "title_text", "New text:"
                         DlgEnable "replace_text", True
+                        DlgEnable "append_option", False
                         DialogFunc = True  'do not exit dialog
                 End Select
             End If

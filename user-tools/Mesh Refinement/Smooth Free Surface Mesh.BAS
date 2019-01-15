@@ -69,7 +69,7 @@ Sub Main
         removed = False
         Do While e.NextInSet(eSet.ID)
             Select Case e.type
-                Case 10 To 22  'do nothing if element is a shell element
+                Case 11 To 22  'do nothing if element is a shell element
                 Case Else
                     propSet.RemoveRule(e.type, FGD_ELEM_BYTYPE)
                     removed = True
