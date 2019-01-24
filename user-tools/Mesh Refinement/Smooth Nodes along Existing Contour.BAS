@@ -3,9 +3,8 @@
 ' length over which to space out the nodes. Also note that nodes must be
 ' selected in the order they are to be spaced.
 
-' TODO: Add biasing; l_i / l_(i-1) = B^(1/(n-1)) for the i-th element where
-'       `B` is the biasing ratio and `n` is the number of elements
 ' TODO: have nodes automatically sorted by their distance from the first node
+
 Dim App As femap.model
 Dim bias_ratio As Double
 Dim bias_option As Integer
