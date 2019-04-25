@@ -14,6 +14,9 @@ Dim mat_1 As femap.Matl
 Dim mat_2 As femap.Matl
 Dim propSet As femap.Set
 
+Dim prop_ids() As Long
+Dim prop_titles() As String
+
 Dim t_1 As Double
 Dim e_1 As Double
 Dim t_2 As Double
@@ -231,15 +234,8 @@ Private Function DialogFunc(DlgItem$, Action%, SuppValue?) As Boolean
                 Case "from_props"
                     ' make sure shell properties exist
                     Set propSet = App.feSet
-                    propSet.AddAll(FT_PROP)
-
-                    ' remove non-plate properties
-                    For i = 1 To 16
-                        propSet.RemoveRule(i, FGD_PROP_BYTYPE)
-                    Next i
-                    For i = 19 To 42
-                        propSet.RemoveRule(i, FGD_PROP_BYTYPE)
-                    Next i
+                    propSet.AddRule(17, FT_PROP)
+                    propSet.AddRule(18, FT_PROP)
 
                     If propSet.Count() = 0 Then
                         App.feAppMessageBox(0, "Error: no plate properties exist in model.")
