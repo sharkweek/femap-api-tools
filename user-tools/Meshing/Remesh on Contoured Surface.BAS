@@ -16,7 +16,7 @@ Sub Main
 
     App.feAppMessage(FCM_COMMAND, "Remesh on Contoured Surface")
     App.feAppMessage(FCM_NORMAL, "Remesh shell elements on a contoured surface. The new mesh will derive its properties from the original")
-    App.feAppMessage(FCM_NORMAL, "surface and are automatically be reassociated with the surface.")
+    App.feAppMessage(FCM_NORMAL, "surface. New elements and nodes are automatically associated with the surface.")
 
     '===========================================================================
     ' Declarations
