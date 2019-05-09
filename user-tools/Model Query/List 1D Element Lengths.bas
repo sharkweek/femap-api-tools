@@ -33,6 +33,11 @@ Sub Main
     Dim _vecTip As Variant
     Dim vecDist As Variant
     Dim dist As Double
+    Dim x_string As String
+    Dim y_string As String
+    Dim z_string As String
+    Dim dist_string As String
+    Dim cWidth As Long
 
     Dim pString As String
 
@@ -53,8 +58,15 @@ Sub Main
 
     End If
 
+    ' define column width
+    cWidth = 10
+
     ' print header
-    pString = "EID      X        Y        Z           Total"
+    pString = Right(Space(cWidth) & "EID", cWidth) & " " & _
+              Right(Space(cWidth) & "dX", cWidth) & " " & _
+              Right(Space(cWidth) & "dY", cWidth) & " " & _
+              Right(Space(cWidth) & "dZ", cWidth) & " " & _
+              Right(Space(cWidth) & "Total", cWidth)
     App.feAppMessage(FCM_COMMAND, pString)
 
     ' print distances for each element
@@ -64,11 +76,15 @@ Sub Main
         App.feMeasureDistanceBetweenNodes2(n1.ID, n2.ID, 0, 0, c_sys.Active, _
                                            _vecBase, _vecTip, vecDist, dist)
 
-        pString = Left(CStr(e.ID) & Space(8), 8) & " " & _
-                  Left(CStr(vecDist(0)) & Space(8), 8) & " " & _
-                  Left(CStr(vecDist(1)) & Space(8), 8) & " " & _
-                  Left(CStr(vecDist(2)) & Space(8), 8) & " " & _
-                  Left(CStr(dist) & Space(8), 8) & " "
+        App.feFormatReal(vecDist(0), cWidth, cWidth, 0, x_string)
+        App.feFormatReal(vecDist(1), cWidth, cWidth, 0, y_string)
+        App.feFormatReal(vecDist(2), cWidth, cWidth, 0, z_string)
+        App.feFormatReal(dist, cWidth, cWidth, 0, dist_string)
+        pString = Right(Space(cWidth) & CStr(e.ID), cWidth) & " " & _
+                  Right(Space(cWidth) & x_string, cWidth) & " " & _
+                  Right(Space(cWidth) & y_string, cWidth) & " " & _
+                  Right(Space(cWidth) & z_string, cWidth) & " " & _
+                  Right(Space(cWidth) & dist_string, cWidth)
 
         App.feAppMessage(FCM_NORMAL, pString)
     Loop
