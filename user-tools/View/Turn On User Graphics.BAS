@@ -4,7 +4,15 @@
 ' Femap API Version: 12.0
 
 Sub Main
-    If feFemap().feGFXEnableView(True, 0) = FE_OK Then
-        feFemap().feAppMessage(FCM_COMMAND, "User Graphics enabled...")
-    End If
+    Dim App As femap.model
+    Set App = feFemap()
+
+    Dim gfxSet As femap.Set
+    Set gfxSet = App.feSet
+
+    gfxSet.AddRange(0, 1e4, 1)
+    App.feGFXSelect(gfxSet.ID, True, True)
+    App.feGFXEnableView(False, App.feView.Active)
+    App.feAppMessage(FCM_COMMAND, "User Graphics enabled...")
+
 End Sub

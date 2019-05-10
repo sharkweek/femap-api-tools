@@ -4,14 +4,17 @@
 ' Femap API Version: 12.0
 
 Sub Main
-    feFemap().feAppMessage(FCM_COMMAND, "Move Annotations")
-    feFemap().feAppMessage(FCM_NORMAL, "Move annotations positioned in the model. Screen positioned annotations are skipped.")
+    Dim App As femap.model
+    Set App = feFemap()
+
+    App.feAppMessage(FCM_COMMAND, "Move Annotations")
+    App.feAppMessage(FCM_NORMAL, "Move annotations positioned in the model. Screen positioned annotations are skipped.")
 
     Dim txt As femap.Text
-    Set txt = feFemap().feText
+    Set txt = App.feText
 
     Dim txt_set As femap.Set
-    Set txt_set = feFemap().feSet
+    Set txt_set = App.feSet
 
     Dim v_base As Variant
     Dim v_dir As Variant
@@ -37,36 +40,36 @@ Sub Main
     If rc = FE_CANCEL Then
         Exit Sub
     ElseIf rc = FE_FAIL Then
-        rc = feFemap().feAppMessage(FCM_ERROR, "Selected text objects do not exist.")
+        rc = App.feAppMessage(FCM_ERROR, "Selected text objects do not exist.")
     Else
         txt_set.Reset()
     End If
 
     ' prompt user to select vector to move by
-    If feFemap().feVectorPick("Select vector...", False, v_length, v_base, v_dir) = FE_CANCEL Then
+    If App.feVectorPick("Select vector...", False, v_length, v_base, v_dir) = FE_CANCEL Then
         Exit Sub
     End If
 
         Do While txt.NextInSet(txt_set.ID)
-            feFemap().feTextGet(txt.ID, txt_drawPointer, txt_drawBorder, txt_modelPos, txt_horzJust, txt_vertJust, txt_visView, txt_layer, txt_fontID, txt_backColor, txt_bordColor, txt_textColor, txt_textLoc, txt_pointerLoc, txt_text)
+            App.feTextGet(txt.ID, txt_drawPointer, txt_drawBorder, txt_modelPos, txt_horzJust, txt_vertJust, txt_visView, txt_layer, txt_fontID, txt_backColor, txt_bordColor, txt_textColor, txt_textLoc, txt_pointerLoc, txt_text)
 
             ' make sure text is model positioned and has pointer
             If txt_modelPos And txt_drawPointer Then
                 For i = 0 To 2
                     txt_pointerLoc(i) += v_dir(i) * v_length
                 Next i
-                feFemap().feTextPut(txt.ID, txt_drawPointer, txt_drawBorder, txt_modelPos, txt_horzJust, txt_vertJust, txt_visView, txt_layer, txt_fontID, txt_backColor, txt_bordColor, txt_textColor, txt_textLoc, txt_pointerLoc, txt_text)
+                App.feTextPut(txt.ID, txt_drawPointer, txt_drawBorder, txt_modelPos, txt_horzJust, txt_vertJust, txt_visView, txt_layer, txt_fontID, txt_backColor, txt_bordColor, txt_textColor, txt_textLoc, txt_pointerLoc, txt_text)
 
             ' prompt user to create pointer
             ElseIf txt_modelPos And txt_drawPointer = False Then
-                feFemap().feAppMessage(FCM_ERROR, "Text object " & CStr(txt.ID) & " has no pointer. Object skipped...")
+                App.feAppMessage(FCM_ERROR, "Text object " & CStr(txt.ID) & " has no pointer. Object skipped...")
 
             Else  ' skip over screen positioned objects
-                feFemap().feAppMessage(FCM_ERROR, "Text object " & CStr(txt.ID) & " is not model-positioned. Object skipped...")
+                App.feAppMessage(FCM_ERROR, "Text object " & CStr(txt.ID) & " is not model-positioned. Object skipped...")
             End If
 
         Loop
 
-        feFemap().feViewRegenerate(0)
+        App.feViewRegenerate(0)
 
 End Sub
