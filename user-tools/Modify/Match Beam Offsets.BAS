@@ -1,0 +1,79 @@
+' Title: Match Beam Offsets.BAS
+' Author: Andy Perez
+' License: OSL-3.0
+' Femap API Version: 2306
+
+' Simcenter Femap, Simcenter Nastran, and related documentation are proprietary
+' to Siemens Digital Industries Software Inc. Siemens and the Siemens logo are
+' registered trademarks of Siemens AG. NX is a trademark or registered trade­mark
+' of Siemens Digital Industries Software Inc. or its subsidiaries in the United
+' States and in other countries.
+
+Sub Main
+    Dim App As femap.model
+    Set App = feFemap()
+
+    App.feAppMessage(FCM_COMMAND, "Match Beam Offset")
+
+    Dim rc As Long
+
+    Dim beamSet As femap.Set
+    Set beamSet = App.feSet
+
+    Dim bSource As femap.Elem
+    Set bSource = App.feElem
+
+    Dim beam As femap.Elem
+    Set beam = App.feElem
+
+    Dim counter As Long
+
+    rc = beamSet.Select(FT_ELEM, True, "Select beam/bar elements...")
+    If rc = FE_CANCEL Then
+        Exit Sub
+    ElseIf rc = FE_NOT_EXIST Then
+        App.feAppMessage(FCM_ERROR, "One or more selected elements do not exist")
+        Exit Sub
+    End If
+
+    ' prompt user to pick element
+    PICK_SOURCE:
+    bSource.SelectID("Source beam/bar...")
+    bSource.Get(bSource.ID)
+
+    ' make sure element is a bar or beam type element
+    Select Case bSource.type
+        Case 2, 5, 8, 37
+            ' do nothing if beam element
+        Case Else
+            rc = App.feAppMessageBox(1, "Selected element is not a beam/bar element")
+            If rc = FE_OK Then
+                GoTo PICK_SOURCE
+            Else
+                Exit Sub
+            End If
+    End Select
+
+    ' offset each beam to the same as the source beam
+    counter = 0
+    Do While beam.NextInSet(beamSet.ID)
+        beam.Get(beam.ID)
+
+        ' make sure element is a beam/bar type
+        Select Case beam.type
+            Case 2, 5, 8, 37
+                beam.voffset = bSource.voffset
+                If beam.Put(beam.ID) <> FE_FAIL Then
+                    counter = counter + 1
+                Else
+                    App.feAppMessage(FCM_ERROR, "Unable to update Element " & CStr(beam.ID) & ".")
+                End If
+            Case Else
+                App.feAppMessage(FCM_ERROR, "Element " & CStr(beam.ID) & " is not a beam/bar element. Element skipped...")
+        End Select
+    Loop
+
+    App.feViewRegenerate(0)
+    App.feAppMessage(FCM_NORMAL, CStr(counter) & " elements updated.")
+
+End Sub
